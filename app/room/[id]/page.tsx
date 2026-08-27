@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react";
 import * as Y from "yjs";
 import type { MonacoBinding } from "y-monaco";
 import type { WebsocketProvider } from "y-websocket";
-import Mediacomponent from "@/app/components/MediaComponent";
+import Whiteboard from "@/app/components/Whiteboard";
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
     ssr: false
 })
+
 
 export default function CodeEditor() {
     const editorRef = useRef(null);
@@ -54,7 +55,7 @@ export default function CodeEditor() {
     }, [])
     return (
         <>
-            <div className="flex gap-4">
+            <div className="flex">
                 <MonacoEditor
                     height="100vh"
                     width={`50vw`}
@@ -62,8 +63,11 @@ export default function CodeEditor() {
                     theme="vs-dark"
                     onMount={handleMount}
                 />
-                <Mediacomponent />
+                <div className="w-1/2 h-screen relative">
+                    <Whiteboard />
+                </div>
             </div>
+
         </>
     );
 };
