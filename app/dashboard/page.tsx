@@ -2,7 +2,7 @@ interface DashboardPageProps {
     // Define props here
 }
 
-export const DashboardPage = (props: DashboardPageProps) => {
+export default function DashboardPage(props: DashboardPageProps) {
     return (
         <div>
             <h1>DashboardPage</h1>

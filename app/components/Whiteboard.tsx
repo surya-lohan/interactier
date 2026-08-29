@@ -8,6 +8,7 @@ import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import { ExcalidrawBinding, yjsToExcalidraw } from "@mizuka/y-excalidraw";
 import * as random from 'lib0/random'
+import { useRoom } from "../Context/RoomContext";
 
 const Excalidraw = dynamic(
     async () => ((await import("@excalidraw/excalidraw")).Excalidraw),
@@ -29,53 +30,44 @@ export const usercolors = [
 
 export const userColor = usercolors[random.uint32() % usercolors.length]
 
-const doc = new Y.Doc();
-
-const yElements = doc.getArray<Y.Map<any>>('elements');
-const yAssets = doc.getMap('assets');
-
-const provider = new SocketIOProvider(
-    `ws://localhost:1234`,
-    'excalidraw-elements',
-    doc,
-    { autoConnect: true }
-);
-provider.awareness.setLocalStateField('user', {
-    name: 'Anonymous' + Math.floor(Math.random() * 100),
-    color: userColor.color,
-    colorLight: userColor.light
-});
 
 export default function Whiteboard() {
     const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
     const [binding, setBindings] = useState<ExcalidrawBinding | null>(null)
 
-    const providerRef = useRef<SocketIOProvider | null>(null);
-    const excalidrawRef = useRef<HTMLDivElement | null>(null);
 
+    const excalidrawRef = useRef<HTMLDivElement | null>(null);
+    const yElementsRef = useRef<Y.Array<Y.Map<any>>>(null)
+    const { yDoc, provider } = useRoom();
 
     // jab excalidraw ki api ready hoje tb 
     useEffect(() => {
-        if (!excalidrawAPI || !excalidrawRef.current) return;
+        if (!excalidrawAPI || !excalidrawRef.current || !yDoc || !provider) return;
 
+        const yElements = yDoc.getArray<Y.Map<any>>('elements');
+        yElementsRef.current = yElements;
+
+        const yAssets = yDoc.getMap('assets');
 
         const binding = new ExcalidrawBinding(
             yElements,
             yAssets,
             excalidrawAPI,
-            providerRef.current?.awareness,
+            provider.awareness,
             { excalidrawDom: excalidrawRef.current, undoManager: new Y.UndoManager(yElements) }
         )
+
         setBindings(binding);
+
         return () => {
             setBindings(null);
             binding.destroy();
         }
 
-    }, [excalidrawAPI]);
+    }, [excalidrawAPI, yDoc, provider]);
 
     const initData = {
-        elements: yjsToExcalidraw(yElements)
+        elements: yElementsRef.current ? yjsToExcalidraw(yElementsRef.current) : []
     }
 
     return (
