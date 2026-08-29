@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import * as Y from "yjs";
 import type { MonacoBinding } from "y-monaco";
-import type { WebsocketProvider } from "y-websocket";
+import type { SocketIOProvider } from "y-socket.io";
 import Whiteboard from "@/app/components/Whiteboard";
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
@@ -14,21 +14,24 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
 export default function CodeEditor() {
     const editorRef = useRef(null);
     const yDocRef = useRef<Y.Doc | null>(null);
-    const providerRef = useRef<WebsocketProvider | null>(null);
+    const providerRef = useRef<SocketIOProvider | null>(null);
     const bindingRef = useRef<MonacoBinding | null>(null);
 
     const handleMount = async (editor: any) => {
         editorRef.current = editor;
         const { MonacoBinding } = await import("y-monaco");//have to dynamically import both to avoid type errors occuring
-        const { WebsocketProvider } = await import("y-websocket");
+        const { SocketIOProvider } = await import("y-socket.io");
 
         const doc = new Y.Doc();
         yDocRef.current = doc;
         const yText = doc.getText('monaco');
-        const provider = new WebsocketProvider(
-            `${location.protocol === 'http:' ? 'ws:' : 'wss:'}//localhost:8080`,
+        const provider = new SocketIOProvider(
+            `${location.protocol === 'http:' ? 'ws:' : 'wss:'}//localhost:1234`,
             'monaco',
-            doc
+            doc,
+            {
+
+            }
         );
         providerRef.current = provider;
 
@@ -67,7 +70,6 @@ export default function CodeEditor() {
                     <Whiteboard />
                 </div>
             </div>
-
         </>
     );
 };
