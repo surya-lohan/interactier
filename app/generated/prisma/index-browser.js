@@ -126,53 +126,61 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
-  password: 'password',
-  role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.AccountScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  provider: 'provider',
-  providerAccountId: 'providerAccountId',
-  refresh_token: 'refresh_token',
-  access_token: 'access_token',
-  expires_at: 'expires_at',
-  token_type: 'token_type',
-  scope: 'scope',
-  id_token: 'id_token',
-  session_state: 'session_state'
+  updatedAt: 'updatedAt',
+  role: 'role'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
-  sessionToken: 'sessionToken',
-  userId: 'userId',
-  expires: 'expires'
+  expiresAt: 'expiresAt',
+  token: 'token',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId'
 };
 
-exports.Prisma.VerificationTokenScalarFieldEnum = {
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  providerId: 'providerId',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VerificationScalarFieldEnum = {
+  id: 'id',
   identifier: 'identifier',
-  token: 'token',
-  expires: 'expires'
+  value: 'value',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.RoomScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   status: 'status',
+  yjsState: 'yjsState',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
 exports.Prisma.RoomParticipantScalarFieldEnum = {
-  role: 'role',
-  time: 'time',
   userId: 'userId',
-  roomId: 'roomId'
+  roomId: 'roomId',
+  role: 'role',
+  time: 'time'
 };
 
 exports.Prisma.SnapshotScalarFieldEnum = {
@@ -180,8 +188,8 @@ exports.Prisma.SnapshotScalarFieldEnum = {
   roomId: 'roomId',
   userId: 'userId',
   code: 'code',
-  codeLang: 'codeLang',
   drawingData: 'drawingData',
+  yjsState: 'yjsState',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -191,7 +199,8 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -223,9 +232,9 @@ exports.STATUS = exports.$Enums.STATUS = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Account: 'Account',
   Session: 'Session',
-  VerificationToken: 'VerificationToken',
+  Account: 'Account',
+  Verification: 'Verification',
   Room: 'Room',
   RoomParticipant: 'RoomParticipant',
   Snapshot: 'Snapshot'

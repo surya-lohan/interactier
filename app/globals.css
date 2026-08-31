@@ -24,3 +24,47 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ==========================================================================
+   y-monaco Remote Cursor & Selection Markers
+   ========================================================================== */
+
+/* Remote user selection background */
+.yRemoteSelection {
+  background-color: rgba(245, 158, 11, 0.28);
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Remote user cursor caret indicator */
+.yRemoteSelectionHead {
+  position: absolute;
+  border-left: 2px solid #f59e0b;
+  border-top: 2px solid #f59e0b;
+  border-bottom: 2px solid #f59e0b;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* Remote user name badge / tag */
+.yRemoteSelectionHead::after {
+  content: " ";
+  position: absolute;
+  top: -18px;
+  left: -2px;
+  font-size: 10px;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-weight: 600;
+  line-height: 1;
+  background-color: #f59e0b;
+  color: #ffffff;
+  padding: 2px 5px;
+  border-radius: 2px 2px 2px 0;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  user-select: none;
+}
