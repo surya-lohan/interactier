@@ -71,7 +71,7 @@ export default function Whiteboard() {
     }
 
     return (
-        <div ref={excalidrawRef} className="absolute inset-0">
+        <div ref={excalidrawRef} className="inset-0 absolute">
             <Excalidraw
                 excalidrawAPI={(api) => setExcalidrawAPI(api)}
                 initialData={initData}

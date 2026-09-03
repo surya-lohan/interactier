@@ -12,8 +12,9 @@ export default function CodeEditor() {
     const [editor, setEditor] = useState<any>(null);
     const bindingRef = useRef<MonacoBinding | null>(null);
 
-    const { yDoc, provider } = useRoom();
+    const [code, setCode] = useState("const");
 
+    const { yDoc, provider } = useRoom();
     // Create binding once editor, yDoc, and provider are all ready
     useEffect(() => {
         if (!editor || !yDoc || !provider) return;
@@ -45,17 +46,24 @@ export default function CodeEditor() {
         }
     }, [editor, yDoc, provider]);
 
+    function getValue() {
+        const editorValue = editor?.getValue();
+
+        console.log(editorValue)
+    }
+
     return (
-        <>
-            <div>
-                <MonacoEditor
-                    height={'100vh'}
-                    width={'50vw'}
-                    language='javascript'
-                    theme='vs-dark'
-                    onMount={(api) => setEditor(api)}
-                />
-            </div>
-        </>
-    )
+        <div className="h-full w-full">
+            <MonacoEditor
+                height="100%"
+                width="100%"
+                language="javascript"
+                theme="vs-dark"
+                onMount={(api) => setEditor(api)}
+                options={{
+                    automaticLayout: true,
+                }}
+            />
+        </div>
+    );
 };
