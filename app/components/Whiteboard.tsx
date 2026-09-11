@@ -63,21 +63,35 @@ export default function Whiteboard() {
             setBindings(null);
             binding.destroy();
         }
-
     }, [excalidrawAPI, yDoc, provider]);
 
+    useEffect(() => {
+        if (!excalidrawAPI) return;
+        excalidrawAPI.updateScene({
+            appState: {
+                theme: "dark",
+                viewBackgroundColor: "#070D1E",
+            }
+        });
+    }, [excalidrawAPI]);
+
     const initData = {
-        elements: yElementsRef.current ? yjsToExcalidraw(yElementsRef.current) : []
+        elements: yElementsRef.current ? yjsToExcalidraw(yElementsRef.current) : [],
+        appState: {
+            theme: "dark" as const,
+            viewBackgroundColor: "#070D1E",
+            currentItemStrokeColor: "#ffffff",
+        }
     }
 
     return (
-        <div className="relative w-full h-full overflow-hidden">
+        <div className="relative w-full h-full overflow-hidden bg-[#070D1E]">
             <div ref={excalidrawRef} className="w-full h-full">
                 <Excalidraw
                     excalidrawAPI={(api) => setExcalidrawAPI(api)}
                     initialData={initData}
                     onPointerUpdate={binding?.onPointerUpdate}
-                    theme="light"
+                    theme="dark"
                 />
             </div>
         </div>
