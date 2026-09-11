@@ -71,13 +71,15 @@ export default function Whiteboard() {
     }
 
     return (
-        <div ref={excalidrawRef} className="inset-0 absolute">
-            <Excalidraw
-                excalidrawAPI={(api) => setExcalidrawAPI(api)}
-                initialData={initData}
-                onPointerUpdate={binding?.onPointerUpdate}
-                theme="light"
-            />
+        <div className="relative w-full h-full overflow-hidden">
+            <div ref={excalidrawRef} className="w-full h-full">
+                <Excalidraw
+                    excalidrawAPI={(api) => setExcalidrawAPI(api)}
+                    initialData={initData}
+                    onPointerUpdate={binding?.onPointerUpdate}
+                    theme="light"
+                />
+            </div>
         </div>
     );
 }
