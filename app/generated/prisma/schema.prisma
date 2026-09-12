@@ -9,7 +9,7 @@ generator client {
 
 enum ROLE {
   USER // Candidate
-  INTERVIEWER // Host / Interviewer
+  INTERVIEWER //host
 }
 
 enum STATUS {
@@ -96,9 +96,6 @@ model Room {
 
   status STATUS @default(WAITING)
 
-  // Yeh column continuous backend sync ke liye use hoga.
-  yjsState Bytes?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -127,11 +124,12 @@ model Snapshot {
   // Optional readable data for web display + strict CRDT binary
   code        String? // Plain text for quick UI preview
   drawingData Json? // JSON for quick UI preview
-  yjsState    Bytes? // Actual binary state if you want to restore this snapshot later
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([roomId, id])
 }

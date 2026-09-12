@@ -171,7 +171,6 @@ exports.Prisma.RoomScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   status: 'status',
-  yjsState: 'yjsState',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -189,7 +188,6 @@ exports.Prisma.SnapshotScalarFieldEnum = {
   userId: 'userId',
   code: 'code',
   drawingData: 'drawingData',
-  yjsState: 'yjsState',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

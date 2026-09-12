@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 
 // GET: Fetch user's recent rooms
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<string> }) {
     try {
         const session = await auth.api.getSession({
             headers: await headers()
@@ -17,8 +17,12 @@ export async function GET(request: NextRequest) {
                 { status: 401 }
             );
         }
+
+        const roomID = await params;
+
         const rooms = await prisma.room.findMany({
             where: {
+                id: roomID,
                 OR: [
                     { userId: session.user.id },
                     { participants: { some: { userId: session.user.id } } },
@@ -86,18 +90,27 @@ export async function POST(request: NextRequest) {
                 }
             });
 
-            return room;
+            const snapshot = await tx.snapshot.create({
+                data: {
+                    roomId: room.id,
+                    userId: session.user.id,
+                    code: "",
+                    drawingData: {},
+                }
+            })
+
+            return { room, snapshot };
         });
 
         return NextResponse.json(
-            { success: true, roomId: newRoom.id, room: newRoom },
+            { success: true, roomId: newRoom.room.id, room: newRoom },
             { status: 201 }
         );
 
     } catch (error) {
         console.error("Room Creation Error:", error);
         return NextResponse.json(
-            { error: "Internal Server Error" },
+            { error: error },
             { status: 500 }
         );
     }

@@ -8,11 +8,10 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
 })
 
 
-export default function CodeEditor() {
+export default function CodeEditor({ code }: { code: string }) {
     const [editor, setEditor] = useState<any>(null);
     const bindingRef = useRef<MonacoBinding | null>(null);
 
-    const [code, setCode] = useState("const");
     const [menu, setMenu] = useState(false);
     const [lang, setLang] = useState("javascript");
 
@@ -54,12 +53,6 @@ export default function CodeEditor() {
             }
         }
     }, [editor, yDoc, provider]);
-
-    function getValue() {
-        const editorValue = editor?.getValue();
-
-        console.log(editorValue)
-    }
 
     function handleListClick(lang: { id: number, name: string }): void {
         if (!lang) {
@@ -138,11 +131,10 @@ export default function CodeEditor() {
                                     onClick={() => handleListClick(item)}
                                     key={item.id}
                                     role="menuitem"
-                                    className={`cursor-pointer flex w-full text-xs font-medium items-center rounded-lg px-3 py-2 transition-colors ${
-                                        lang === item.name
-                                            ? "bg-[#8083FF]/20 text-white font-semibold"
-                                            : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
-                                    }`}
+                                    className={`cursor-pointer flex w-full text-xs font-medium items-center rounded-lg px-3 py-2 transition-colors ${lang === item.name
+                                        ? "bg-[#8083FF]/20 text-white font-semibold"
+                                        : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                                        }`}
                                 >
                                     <span className="capitalize">{item.name}</span>
                                 </li>
@@ -158,6 +150,7 @@ export default function CodeEditor() {
             </div>
             <div className="flex-1 w-full min-h-0 relative">
                 <MonacoEditor
+                    value={code}
                     height="100%"
                     width="100%"
                     language={lang}

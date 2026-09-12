@@ -13,26 +13,50 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     const { data: session, isPending } = authClient.useSession();
     const router = useRouter();
 
+    const [snapshotId, setSnapShotId] = useState("");
+    const [code, setCode] = useState("");
+    const [yElements, setYElements] = useState<any[] | null>(null);
+
     useEffect(() => {
         if (!session && !isPending) {
             router.push('/auth/signin')
         }
     }, [session, isPending, router]);
 
+
+    useEffect(() => {
+        try {
+            fetch(`/api/rooms/snapshot/${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data?.snapshot) {
+                        setSnapShotId(data.snapshot.id);
+                        setCode(data.snapshot.code ?? data.code ?? "");
+                        setYElements(data.snapshot.drawingData ?? data.drawingData ?? []);
+                    } else if (data) {
+                        setCode(data.code ?? "");
+                        setYElements(data.drawingData ?? []);
+                    }
+                });
+        } catch (error) {
+            console.log("Error fetching rooms data", error);
+        }
+    }, [id]);
+
     return (
         <RoomContext roomId={id}>
             <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#070D1E]">
-                <Navbar roomId={id} />
+                <Navbar roomId={id} snapshotId={snapshotId} />
                 <main className="relative flex flex-1 w-full pt-14 overflow-hidden">
                     <Group orientation="horizontal">
                         <Panel defaultSize="50%" className="h-full w-full relative overflow-hidden bg-[#070D1E]">
-                            <CodeEditor />
+                            <CodeEditor code={code} />
                         </Panel>
                         <Separator className="w-2 bg-slate-900/80 hover:bg-slate-800 transition-colors cursor-col-resize flex items-center justify-center relative z-10 group">
                             <div className="w-0.5 h-8 rounded-full bg-slate-700 group-hover:bg-[#8083FF] transition-colors" />
                         </Separator>
                         <Panel defaultSize="50%" className="h-full w-full relative overflow-hidden bg-[#070D1E]">
-                            <Whiteboard />
+                            <Whiteboard yElement={yElements} />
                         </Panel>
                     </Group>
                 </main>

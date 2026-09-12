@@ -6098,7 +6098,6 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     status: $Enums.STATUS | null
-    yjsState: Bytes | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6107,7 +6106,6 @@ export namespace Prisma {
     id: string | null
     userId: string | null
     status: $Enums.STATUS | null
-    yjsState: Bytes | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6116,7 +6114,6 @@ export namespace Prisma {
     id: number
     userId: number
     status: number
-    yjsState: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6127,7 +6124,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     status?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6136,7 +6132,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     status?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6145,7 +6140,6 @@ export namespace Prisma {
     id?: true
     userId?: true
     status?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6227,7 +6221,6 @@ export namespace Prisma {
     id: string
     userId: string
     status: $Enums.STATUS
-    yjsState: Bytes | null
     createdAt: Date
     updatedAt: Date
     _count: RoomCountAggregateOutputType | null
@@ -6253,7 +6246,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     status?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6266,7 +6258,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     status?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6276,7 +6267,6 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     status?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6286,12 +6276,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     status?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type RoomOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "status" | "yjsState" | "createdAt" | "updatedAt", ExtArgs["result"]["room"]>
+  export type RoomOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["room"]>
   export type RoomInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     participants?: boolean | Room$participantsArgs<ExtArgs>
@@ -6316,7 +6305,6 @@ export namespace Prisma {
       id: string
       userId: string
       status: $Enums.STATUS
-      yjsState: Prisma.Bytes | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["room"]>
@@ -6748,7 +6736,6 @@ export namespace Prisma {
     readonly id: FieldRef<"Room", 'String'>
     readonly userId: FieldRef<"Room", 'String'>
     readonly status: FieldRef<"Room", 'STATUS'>
-    readonly yjsState: FieldRef<"Room", 'Bytes'>
     readonly createdAt: FieldRef<"Room", 'DateTime'>
     readonly updatedAt: FieldRef<"Room", 'DateTime'>
   }
@@ -8291,7 +8278,6 @@ export namespace Prisma {
     roomId: string | null
     userId: string | null
     code: string | null
-    yjsState: Bytes | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8301,7 +8287,6 @@ export namespace Prisma {
     roomId: string | null
     userId: string | null
     code: string | null
-    yjsState: Bytes | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8312,7 +8297,6 @@ export namespace Prisma {
     userId: number
     code: number
     drawingData: number
-    yjsState: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8324,7 +8308,6 @@ export namespace Prisma {
     roomId?: true
     userId?: true
     code?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8334,7 +8317,6 @@ export namespace Prisma {
     roomId?: true
     userId?: true
     code?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8345,7 +8327,6 @@ export namespace Prisma {
     userId?: true
     code?: true
     drawingData?: true
-    yjsState?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8429,7 +8410,6 @@ export namespace Prisma {
     userId: string
     code: string | null
     drawingData: JsonValue | null
-    yjsState: Bytes | null
     createdAt: Date
     updatedAt: Date
     _count: SnapshotCountAggregateOutputType | null
@@ -8457,7 +8437,6 @@ export namespace Prisma {
     userId?: boolean
     code?: boolean
     drawingData?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8470,7 +8449,6 @@ export namespace Prisma {
     userId?: boolean
     code?: boolean
     drawingData?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8483,7 +8461,6 @@ export namespace Prisma {
     userId?: boolean
     code?: boolean
     drawingData?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -8496,12 +8473,11 @@ export namespace Prisma {
     userId?: boolean
     code?: boolean
     drawingData?: boolean
-    yjsState?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roomId" | "userId" | "code" | "drawingData" | "yjsState" | "createdAt" | "updatedAt", ExtArgs["result"]["snapshot"]>
+  export type SnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roomId" | "userId" | "code" | "drawingData" | "createdAt" | "updatedAt", ExtArgs["result"]["snapshot"]>
   export type SnapshotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     room?: boolean | RoomDefaultArgs<ExtArgs>
@@ -8527,7 +8503,6 @@ export namespace Prisma {
       userId: string
       code: string | null
       drawingData: Prisma.JsonValue | null
-      yjsState: Prisma.Bytes | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["snapshot"]>
@@ -8960,7 +8935,6 @@ export namespace Prisma {
     readonly userId: FieldRef<"Snapshot", 'String'>
     readonly code: FieldRef<"Snapshot", 'String'>
     readonly drawingData: FieldRef<"Snapshot", 'Json'>
-    readonly yjsState: FieldRef<"Snapshot", 'Bytes'>
     readonly createdAt: FieldRef<"Snapshot", 'DateTime'>
     readonly updatedAt: FieldRef<"Snapshot", 'DateTime'>
   }
@@ -9459,7 +9433,6 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     status: 'status',
-    yjsState: 'yjsState',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -9483,7 +9456,6 @@ export namespace Prisma {
     userId: 'userId',
     code: 'code',
     drawingData: 'drawingData',
-    yjsState: 'yjsState',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -9597,20 +9569,6 @@ export namespace Prisma {
    * Reference to a field of type 'STATUS[]'
    */
   export type ListEnumSTATUSFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'STATUS[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes'
-   */
-  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes[]'
-   */
-  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -9956,7 +9914,6 @@ export namespace Prisma {
     id?: StringFilter<"Room"> | string
     userId?: StringFilter<"Room"> | string
     status?: EnumSTATUSFilter<"Room"> | $Enums.STATUS
-    yjsState?: BytesNullableFilter<"Room"> | Bytes | null
     createdAt?: DateTimeFilter<"Room"> | Date | string
     updatedAt?: DateTimeFilter<"Room"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9968,7 +9925,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     status?: SortOrder
-    yjsState?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -9983,7 +9939,6 @@ export namespace Prisma {
     NOT?: RoomWhereInput | RoomWhereInput[]
     userId?: StringFilter<"Room"> | string
     status?: EnumSTATUSFilter<"Room"> | $Enums.STATUS
-    yjsState?: BytesNullableFilter<"Room"> | Bytes | null
     createdAt?: DateTimeFilter<"Room"> | Date | string
     updatedAt?: DateTimeFilter<"Room"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9995,7 +9950,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     status?: SortOrder
-    yjsState?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: RoomCountOrderByAggregateInput
@@ -10010,7 +9964,6 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Room"> | string
     userId?: StringWithAggregatesFilter<"Room"> | string
     status?: EnumSTATUSWithAggregatesFilter<"Room"> | $Enums.STATUS
-    yjsState?: BytesNullableWithAggregatesFilter<"Room"> | Bytes | null
     createdAt?: DateTimeWithAggregatesFilter<"Room"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Room"> | Date | string
   }
@@ -10078,7 +10031,6 @@ export namespace Prisma {
     userId?: StringFilter<"Snapshot"> | string
     code?: StringNullableFilter<"Snapshot"> | string | null
     drawingData?: JsonNullableFilter<"Snapshot">
-    yjsState?: BytesNullableFilter<"Snapshot"> | Bytes | null
     createdAt?: DateTimeFilter<"Snapshot"> | Date | string
     updatedAt?: DateTimeFilter<"Snapshot"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10091,7 +10043,6 @@ export namespace Prisma {
     userId?: SortOrder
     code?: SortOrderInput | SortOrder
     drawingData?: SortOrderInput | SortOrder
-    yjsState?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -10100,6 +10051,7 @@ export namespace Prisma {
 
   export type SnapshotWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    roomId_id?: SnapshotRoomIdIdCompoundUniqueInput
     AND?: SnapshotWhereInput | SnapshotWhereInput[]
     OR?: SnapshotWhereInput[]
     NOT?: SnapshotWhereInput | SnapshotWhereInput[]
@@ -10107,12 +10059,11 @@ export namespace Prisma {
     userId?: StringFilter<"Snapshot"> | string
     code?: StringNullableFilter<"Snapshot"> | string | null
     drawingData?: JsonNullableFilter<"Snapshot">
-    yjsState?: BytesNullableFilter<"Snapshot"> | Bytes | null
     createdAt?: DateTimeFilter<"Snapshot"> | Date | string
     updatedAt?: DateTimeFilter<"Snapshot"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     room?: XOR<RoomScalarRelationFilter, RoomWhereInput>
-  }, "id">
+  }, "id" | "roomId_id">
 
   export type SnapshotOrderByWithAggregationInput = {
     id?: SortOrder
@@ -10120,7 +10071,6 @@ export namespace Prisma {
     userId?: SortOrder
     code?: SortOrderInput | SortOrder
     drawingData?: SortOrderInput | SortOrder
-    yjsState?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SnapshotCountOrderByAggregateInput
@@ -10137,7 +10087,6 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Snapshot"> | string
     code?: StringNullableWithAggregatesFilter<"Snapshot"> | string | null
     drawingData?: JsonNullableWithAggregatesFilter<"Snapshot">
-    yjsState?: BytesNullableWithAggregatesFilter<"Snapshot"> | Bytes | null
     createdAt?: DateTimeWithAggregatesFilter<"Snapshot"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Snapshot"> | Date | string
   }
@@ -10492,7 +10441,6 @@ export namespace Prisma {
   export type RoomCreateInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRoomsInput
@@ -10504,7 +10452,6 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     participants?: RoomParticipantUncheckedCreateNestedManyWithoutRoomInput
@@ -10514,7 +10461,6 @@ export namespace Prisma {
   export type RoomUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRoomsNestedInput
@@ -10526,7 +10472,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participants?: RoomParticipantUncheckedUpdateManyWithoutRoomNestedInput
@@ -10537,7 +10482,6 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10545,7 +10489,6 @@ export namespace Prisma {
   export type RoomUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10554,7 +10497,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10610,7 +10552,6 @@ export namespace Prisma {
     id?: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSnapshotsInput
@@ -10623,7 +10564,6 @@ export namespace Prisma {
     userId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10632,7 +10572,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSnapshotsNestedInput
@@ -10645,7 +10584,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10656,7 +10594,6 @@ export namespace Prisma {
     userId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10665,7 +10602,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10676,7 +10612,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11035,18 +10970,10 @@ export namespace Prisma {
     not?: NestedEnumSTATUSFilter<$PrismaModel> | $Enums.STATUS
   }
 
-  export type BytesNullableFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
-  }
-
   export type RoomCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     status?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11055,7 +10982,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     status?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11064,7 +10990,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     status?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11077,16 +11002,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSTATUSFilter<$PrismaModel>
     _max?: NestedEnumSTATUSFilter<$PrismaModel>
-  }
-
-  export type BytesNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBytesNullableFilter<$PrismaModel>
-    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
 
   export type RoomScalarRelationFilter = {
@@ -11143,13 +11058,17 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type SnapshotRoomIdIdCompoundUniqueInput = {
+    roomId: string
+    id: string
+  }
+
   export type SnapshotCountOrderByAggregateInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     code?: SortOrder
     drawingData?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11159,7 +11078,6 @@ export namespace Prisma {
     roomId?: SortOrder
     userId?: SortOrder
     code?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11169,7 +11087,6 @@ export namespace Prisma {
     roomId?: SortOrder
     userId?: SortOrder
     code?: SortOrder
-    yjsState?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11500,10 +11417,6 @@ export namespace Prisma {
     set?: $Enums.STATUS
   }
 
-  export type NullableBytesFieldUpdateOperationsInput = {
-    set?: Bytes | null
-  }
-
   export type UserUpdateOneRequiredWithoutRoomsNestedInput = {
     create?: XOR<UserCreateWithoutRoomsInput, UserUncheckedCreateWithoutRoomsInput>
     connectOrCreate?: UserCreateOrConnectWithoutRoomsInput
@@ -11795,13 +11708,6 @@ export namespace Prisma {
     not?: NestedEnumSTATUSFilter<$PrismaModel> | $Enums.STATUS
   }
 
-  export type NestedBytesNullableFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableFilter<$PrismaModel> | Bytes | null
-  }
-
   export type NestedEnumSTATUSWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.STATUS | EnumSTATUSFieldRefInput<$PrismaModel>
     in?: $Enums.STATUS[] | ListEnumSTATUSFieldRefInput<$PrismaModel>
@@ -11810,16 +11716,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumSTATUSFilter<$PrismaModel>
     _max?: NestedEnumSTATUSFilter<$PrismaModel>
-  }
-
-  export type NestedBytesNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Bytes | BytesFieldRefInput<$PrismaModel> | null
-    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel> | null
-    not?: NestedBytesNullableWithAggregatesFilter<$PrismaModel> | Bytes | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedBytesNullableFilter<$PrismaModel>
-    _max?: NestedBytesNullableFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -11918,7 +11814,6 @@ export namespace Prisma {
   export type RoomCreateWithoutUserInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     participants?: RoomParticipantCreateNestedManyWithoutRoomInput
@@ -11928,7 +11823,6 @@ export namespace Prisma {
   export type RoomUncheckedCreateWithoutUserInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     participants?: RoomParticipantUncheckedCreateNestedManyWithoutRoomInput
@@ -11971,7 +11865,6 @@ export namespace Prisma {
     id?: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     room: RoomCreateNestedOneWithoutSnapshotsInput
@@ -11982,7 +11875,6 @@ export namespace Prisma {
     roomId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12085,7 +11977,6 @@ export namespace Prisma {
     id?: StringFilter<"Room"> | string
     userId?: StringFilter<"Room"> | string
     status?: EnumSTATUSFilter<"Room"> | $Enums.STATUS
-    yjsState?: BytesNullableFilter<"Room"> | Bytes | null
     createdAt?: DateTimeFilter<"Room"> | Date | string
     updatedAt?: DateTimeFilter<"Room"> | Date | string
   }
@@ -12141,7 +12032,6 @@ export namespace Prisma {
     userId?: StringFilter<"Snapshot"> | string
     code?: StringNullableFilter<"Snapshot"> | string | null
     drawingData?: JsonNullableFilter<"Snapshot">
-    yjsState?: BytesNullableFilter<"Snapshot"> | Bytes | null
     createdAt?: DateTimeFilter<"Snapshot"> | Date | string
     updatedAt?: DateTimeFilter<"Snapshot"> | Date | string
   }
@@ -12359,7 +12249,6 @@ export namespace Prisma {
     id?: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutSnapshotsInput
@@ -12370,7 +12259,6 @@ export namespace Prisma {
     userId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12461,7 +12349,6 @@ export namespace Prisma {
   export type RoomCreateWithoutParticipantsInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRoomsInput
@@ -12472,7 +12359,6 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     snapshots?: SnapshotUncheckedCreateNestedManyWithoutRoomInput
@@ -12532,7 +12418,6 @@ export namespace Prisma {
   export type RoomUpdateWithoutParticipantsInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRoomsNestedInput
@@ -12543,7 +12428,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     snapshots?: SnapshotUncheckedUpdateManyWithoutRoomNestedInput
@@ -12628,7 +12512,6 @@ export namespace Prisma {
   export type RoomCreateWithoutSnapshotsInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutRoomsInput
@@ -12639,7 +12522,6 @@ export namespace Prisma {
     id?: string
     userId: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
     participants?: RoomParticipantUncheckedCreateNestedManyWithoutRoomInput
@@ -12705,7 +12587,6 @@ export namespace Prisma {
   export type RoomUpdateWithoutSnapshotsInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutRoomsNestedInput
@@ -12716,7 +12597,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participants?: RoomParticipantUncheckedUpdateManyWithoutRoomNestedInput
@@ -12750,7 +12630,6 @@ export namespace Prisma {
   export type RoomCreateManyUserInput = {
     id?: string
     status?: $Enums.STATUS
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12766,7 +12645,6 @@ export namespace Prisma {
     roomId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12849,7 +12727,6 @@ export namespace Prisma {
   export type RoomUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participants?: RoomParticipantUpdateManyWithoutRoomNestedInput
@@ -12859,7 +12736,6 @@ export namespace Prisma {
   export type RoomUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     participants?: RoomParticipantUncheckedUpdateManyWithoutRoomNestedInput
@@ -12869,7 +12745,6 @@ export namespace Prisma {
   export type RoomUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: EnumSTATUSFieldUpdateOperationsInput | $Enums.STATUS
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12896,7 +12771,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     room?: RoomUpdateOneRequiredWithoutSnapshotsNestedInput
@@ -12907,7 +12781,6 @@ export namespace Prisma {
     roomId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12917,7 +12790,6 @@ export namespace Prisma {
     roomId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12933,7 +12805,6 @@ export namespace Prisma {
     userId: string
     code?: string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: Bytes | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12960,7 +12831,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSnapshotsNestedInput
@@ -12971,7 +12841,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12981,7 +12850,6 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
     drawingData?: NullableJsonNullValueInput | InputJsonValue
-    yjsState?: NullableBytesFieldUpdateOperationsInput | Bytes | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

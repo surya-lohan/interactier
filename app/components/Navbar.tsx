@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useRoom } from "../Context/RoomContext";
+import axios from "axios";
 
-export default function Navbar({ roomId }: { roomId: string }) {
+export default function Navbar({ roomId, snapshotId }: { roomId: string, snapshotId: string }) {
     const router = useRouter();
     const [copied, setCopied] = useState(false);
+    const { yDoc } = useRoom();
 
     const handleCopy = () => {
         if (!roomId) return;
@@ -14,7 +17,24 @@ export default function Navbar({ roomId }: { roomId: string }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleEndSession = () => {
+
+
+    const handleEndSession = async () => {
+
+        const code = yDoc?.getText('monaco') || ""
+        const yElements = yDoc?.getArray('elements').toJSON();
+
+        try {
+            const response = await axios.patch('/api/rooms/savesnap', {
+                code: code,
+                drawingData: yElements,
+                roomId,
+                snapshotId
+            })
+            console.log(response.data);
+        } catch (error) {
+            console.log("Error", error)
+        }
         router.push("/dashboard");
     };
 

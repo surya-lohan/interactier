@@ -1,7 +1,9 @@
+import Mediacomponent from "./components/MediaComponent";
+
 export default function Page() {
   return (
     <div>
-      <h1>This is homepage</h1>
+      This is homepage
     </div>
   );
 };

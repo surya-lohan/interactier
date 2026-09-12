@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
 
     try {
         const session = await auth.api.getSession({
@@ -19,30 +19,26 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
 
-        const { roomId, code, drawingData, yjsStateArray } = body;
+        const { roomId, code, drawingData, snapshotId } = body;
 
-        if (!roomId || !yjsStateArray) {
+        if (!roomId || !snapshotId) {
             return NextResponse.json({
                 error: "Missing required data",
                 status: 400
             })
         }
 
-        const yjsBuffer = Buffer.from(yjsStateArray);
 
-        const snapshot = await prisma.snapshot.create({
+        const snapshot = await prisma.snapshot.update({
+            where: { roomId: roomId, id: snapshotId },
             data: {
-                roomId: roomId,
-                userId: session.user.id,
-                code: code || "",
-                drawingData: drawingData || {},
-                yjsState: yjsBuffer
+                code: code ?? "",
+                drawingData: drawingData ?? {},
             }
         })
-        return NextResponse.json({ success: true, snapshotId: snapshot.id });
+        return NextResponse.json({ success: true, snapshot: snapshot });
     } catch (error) {
         console.error("Snapshot Save Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
-
 }

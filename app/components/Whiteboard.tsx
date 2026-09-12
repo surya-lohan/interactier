@@ -31,7 +31,19 @@ export const usercolors = [
 export const userColor = usercolors[random.uint32() % usercolors.length]
 
 
-export default function Whiteboard() {
+function getInitialElements(data: unknown): readonly ExcalidrawElement[] {
+    if (!data) return [];
+    if (data instanceof Y.Array) {
+        console.log(yjsToExcalidraw(data))
+        return yjsToExcalidraw(data);
+    }
+    if (Array.isArray(data)) {
+        return data.map((item: any) => (item?.el ? item.el : item));
+    }
+    return [];
+}
+
+export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>> | any[] | Record<string, any> | null }) {
     const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
     const [binding, setBindings] = useState<ExcalidrawBinding | null>(null)
 
@@ -40,12 +52,37 @@ export default function Whiteboard() {
     const yElementsRef = useRef<Y.Array<Y.Map<any>>>(null)
     const { yDoc, provider } = useRoom();
 
+
     // jab excalidraw ki api ready hoje tb 
     useEffect(() => {
         if (!excalidrawAPI || !excalidrawRef.current || !yDoc || !provider) return;
 
         const yElements = yDoc.getArray<Y.Map<any>>('elements');
         yElementsRef.current = yElements;
+
+        const sceneElements = excalidrawAPI.getSceneElements();
+        const rawElements = (Array.isArray(yElement) && yElement.length > 0)
+            ? yElement
+            : (sceneElements.length > 0 ? sceneElements : []);
+
+        console.log("[Whiteboard] Binding effect running:", {
+            yElementsLength: yElements.length,
+            rawElementsLength: rawElements.length,
+            sceneElementsLength: sceneElements.length,
+        });
+
+        // Agar yDoc me elements nahi hain aur snapshot ya canvas data available hai, toh yDoc me seed karein
+        if (yElements.length === 0 && rawElements.length > 0) {
+            yDoc.transact(() => {
+                const maps = rawElements.map((item: any, index: number) => {
+                    const el = item?.el ? item.el : item;
+                    const pos = item?.pos ?? String(index).padStart(6, '0');
+                    return new Y.Map(Object.entries({ pos, el }));
+                });
+                yElements.push(maps);
+            });
+            console.log("[Whiteboard] Seeded yDoc with", rawElements.length, "elements");
+        }
 
         const yAssets = yDoc.getMap('assets');
 
@@ -55,7 +92,13 @@ export default function Whiteboard() {
             excalidrawAPI,
             provider.awareness,
             { excalidrawDom: excalidrawRef.current, undoManager: new Y.UndoManager(yElements) }
-        )
+        );
+
+        // Explicitly ensure scene has the elements if yElements has them
+        const syncedElements = yjsToExcalidraw(yElements);
+        if (syncedElements.length > 0) {
+            excalidrawAPI.updateScene({ elements: syncedElements });
+        }
 
         setBindings(binding);
 
@@ -63,20 +106,10 @@ export default function Whiteboard() {
             setBindings(null);
             binding.destroy();
         }
-    }, [excalidrawAPI, yDoc, provider]);
-
-    useEffect(() => {
-        if (!excalidrawAPI) return;
-        excalidrawAPI.updateScene({
-            appState: {
-                theme: "dark",
-                viewBackgroundColor: "#070D1E",
-            }
-        });
-    }, [excalidrawAPI]);
+    }, [excalidrawAPI, yDoc, provider, yElement]);
 
     const initData = {
-        elements: yElementsRef.current ? yjsToExcalidraw(yElementsRef.current) : [],
+        elements: getInitialElements(yElement),
         appState: {
             theme: "dark" as const,
             viewBackgroundColor: "#070D1E",
