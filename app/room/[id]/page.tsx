@@ -7,6 +7,7 @@ import Navbar from "@/app/components/Navbar";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Mediacomponent from "@/app/components/MediaComponent";
 
 export default function RoomPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -16,6 +17,7 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     const [snapshotId, setSnapShotId] = useState("");
     const [code, setCode] = useState("");
     const [yElements, setYElements] = useState<any[] | null>(null);
+    const [isValidating, setIsValidating] = useState(true);
 
     useEffect(() => {
         if (!session && !isPending) {
@@ -25,28 +27,52 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
 
 
     useEffect(() => {
-        try {
-            fetch(`/api/rooms/snapshot/${id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data?.snapshot) {
-                        setSnapShotId(data.snapshot.id);
-                        setCode(data.snapshot.code ?? data.code ?? "");
-                        setYElements(data.snapshot.drawingData ?? data.drawingData ?? []);
-                    } else if (data) {
-                        setCode(data.code ?? "");
-                        setYElements(data.drawingData ?? []);
-                    }
-                });
-        } catch (error) {
-            console.log("Error fetching rooms data", error);
+
+        if (!session) return;
+
+        const validateAndLoad = async () => {
+            try {
+                const valRes = await fetch(`/api/rooms/validate/${id}`);
+                const valData = await valRes.json();
+
+                if (!valData.allowed) {
+                    console.warn("Access denied to room!", valData.reason);
+                    router.replace("/dashboard");
+                    return;
+                }
+
+                const snapRes = await fetch(`/api/rooms/snapshot/${id}`);
+
+                const snapData = await snapRes.json();
+
+                if (snapData?.snapshot) {
+                    setSnapShotId(snapData.snapshot.id);
+                    setCode(snapData.snapshot.code ?? snapData.code ?? "");
+                    setYElements(snapData.snapshot.drawingData ?? snapData.drawingData ?? []);
+                }
+                setIsValidating(false);
+            } catch (error) {
+                console.error("Validation error: ", error);
+                router.replace("/dashboard")
+            }
         }
-    }, [id]);
+        validateAndLoad();
+    }, [id, session, router]);
+
+    if (isValidating || isPending) {
+        return (
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#070D1E] text-slate-300 gap-3">
+                <div className="w-8 h-8 border-2 border-[#8083FF] border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium text-slate-400">Verifying room access...</span>
+            </div>
+        );
+    }
 
     return (
         <RoomContext roomId={id}>
             <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#070D1E]">
                 <Navbar roomId={id} snapshotId={snapshotId} />
+                <Mediacomponent roomId={id} />
                 <main className="relative flex flex-1 w-full pt-14 overflow-hidden">
                     <Group orientation="horizontal">
                         <Panel defaultSize="50%" className="h-full w-full relative overflow-hidden bg-[#070D1E]">

@@ -154,6 +154,7 @@ export default function CodeEditor({ code }: { code: string }) {
                     height="100%"
                     width="100%"
                     language={lang}
+
                     theme="interactier-dark"
                     beforeMount={defineTheme}
                     onMount={(api, monaco) => {
@@ -171,6 +172,7 @@ export default function CodeEditor({ code }: { code: string }) {
                         cursorBlinking: "smooth",
                         cursorSmoothCaretAnimation: "on",
                         renderLineHighlight: "all",
+                        wordWrap: "on"
                     }}
                 />
             </div>

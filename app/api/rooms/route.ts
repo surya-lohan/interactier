@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 
 // GET: Fetch user's recent rooms
-export async function GET(request: NextRequest, { params }: { params: Promise<string> }) {
+export async function GET(request: NextRequest) {
     try {
         const session = await auth.api.getSession({
             headers: await headers()
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<st
             );
         }
 
-        const roomID = await params;
+        const roomID = request.nextUrl.searchParams.get("roomId") || undefined;
 
         const rooms = await prisma.room.findMany({
             where: {

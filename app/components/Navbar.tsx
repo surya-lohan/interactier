@@ -31,7 +31,6 @@ export default function Navbar({ roomId, snapshotId }: { roomId: string, snapsho
                 roomId,
                 snapshotId
             })
-            console.log(response.data);
         } catch (error) {
             console.log("Error", error)
         }

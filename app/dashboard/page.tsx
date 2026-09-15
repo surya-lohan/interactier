@@ -143,7 +143,7 @@ export default function DashboardPage() {
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
 
                     {/* 1. Create Room Card */}
-                    <div className="rounded-3xl bg-[#0E172E] border border-slate-800/90 p-6 sm:p-8 hover:border-[#8083FF]/40 transition-all duration-300 shadow-xl flex flex-col justify-between">
+                    <div className="rounded-3xl h-fit bg-[#0E172E] border border-slate-800/90 p-6 sm:p-8 hover:border-[#8083FF]/40 transition-all duration-300 shadow-xl flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-12 h-12 rounded-2xl bg-[#8083FF]/15 border border-[#8083FF]/30 flex items-center justify-center text-[#8083FF]">
@@ -158,18 +158,6 @@ export default function DashboardPage() {
                             </div>
 
                             <form onSubmit={handleCreateRoom} className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-semibold tracking-wider text-slate-300 uppercase mb-2">
-                                        Room Topic / Title
-                                    </label>
-                                    <input
-                                        ref={createRoomInputRef}
-                                        type="text"
-                                        name="roomTopic"
-                                        placeholder="e.g. System Design Mock Interview"
-                                        className="w-full bg-[#15203D] border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#8083FF] transition"
-                                    />
-                                </div>
 
                                 <div>
                                     <label className="block text-xs font-semibold tracking-wider text-slate-300 uppercase mb-2">
@@ -276,7 +264,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* 2. Join Room Card */}
-                    <div className="rounded-3xl bg-[#0E172E] border border-slate-800/90 p-6 sm:p-8 hover:border-indigo-500/40 transition-all duration-300 shadow-xl flex flex-col justify-between">
+                    <div className="rounded-3xl h-fit bg-[#0E172E] border border-slate-800/90 p-6 sm:p-8 hover:border-indigo-500/40 transition-all duration-300 shadow-xl flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
@@ -301,18 +289,6 @@ export default function DashboardPage() {
                                         name="roomId"
                                         placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
                                         className="w-full bg-[#15203D] border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-semibold tracking-wider text-slate-300 uppercase mb-2">
-                                        Display Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="displayName"
-                                        placeholder="Your name in the room"
-                                        className="w-full bg-[#15203D] border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
                                     />
                                 </div>
 
