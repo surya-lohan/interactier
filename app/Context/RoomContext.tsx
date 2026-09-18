@@ -12,7 +12,9 @@ interface RoomContexType {
 const roomContext = createContext<RoomContexType>({
     yDoc: null,
     provider: null
-})
+});
+
+
 
 export const useRoom = () => useContext(roomContext);
 
@@ -32,6 +34,7 @@ export default function RoomContext({ roomId, children }: { roomId: string, chil
         )
 
         const userColor = usercolors[random.uint32() % usercolors.length];
+
         socketProvider.awareness.setLocalStateField("user", {
             name: "Candidate_" + Math.floor(Math.random() * 100),
             color: userColor.color,
@@ -47,6 +50,7 @@ export default function RoomContext({ roomId, children }: { roomId: string, chil
         }
 
     }, [roomId])
+
     return (
         <roomContext.Provider value={{ yDoc, provider }}>
             {children}

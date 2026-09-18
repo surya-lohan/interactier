@@ -21,6 +21,8 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
     const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
     const isDraggingRef = useRef(false);
     const dragOffsetRef = useRef({ x: 0, y: 0 });
+    const dragDimensionsRef = useRef({ width: 288, height: 190 });
+    const rafIdRef = useRef<number | null>(null);
 
     // Initialize position at bottom-right of viewport on client mount
     useEffect(() => {
@@ -31,18 +33,31 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
         }
     }, []);
 
-    // Pointer event handlers for fluid, lag-free dragging
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-        // Only drag on primary (left) button click
         if (e.button !== 0) return;
         // Don't drag if user is clicking an interactive button (minimize, mute, etc.)
         if ((e.target as HTMLElement).closest("button")) return;
 
         isDraggingRef.current = true;
+        const rect = containerRef.current?.getBoundingClientRect();
+        const curX = rect ? rect.left : (position?.x ?? 0);
+        const curY = rect ? rect.top : (position?.y ?? 0);
+
         dragOffsetRef.current = {
-            x: e.clientX - (position?.x ?? 0),
-            y: e.clientY - (position?.y ?? 0),
+            x: e.clientX - curX,
+            y: e.clientY - curY,
         };
+
+        if (containerRef.current) {
+            // Cache dimensions once at drag start to eliminate layout thrashing
+            dragDimensionsRef.current = {
+                width: containerRef.current.offsetWidth,
+                height: containerRef.current.offsetHeight,
+            };
+            // Disable any CSS transition immediately so dragging doesn't rubber-band
+            containerRef.current.style.transition = "none";
+            containerRef.current.style.willChange = "left, top";
+        }
 
         // Capture all pointer movements even if cursor leaves header during fast drag
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -51,28 +66,50 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!isDraggingRef.current) return;
 
-        const currentWidth = containerRef.current?.offsetWidth || 288;
-        const currentHeight = containerRef.current?.offsetHeight || 190;
-
+        const { width, height } = dragDimensionsRef.current;
         const rawX = e.clientX - dragOffsetRef.current.x;
         const rawY = e.clientY - dragOffsetRef.current.y;
 
         // Min Y is 60px so it cannot hide behind the 56px top fixed Navbar
-        const maxX = Math.max(10, window.innerWidth - currentWidth - 10);
-        const maxY = Math.max(60, window.innerHeight - currentHeight - 10);
+        const maxX = Math.max(10, window.innerWidth - width - 10);
+        const maxY = Math.max(60, window.innerHeight - height - 10);
 
         const clampedX = Math.min(Math.max(10, rawX), maxX);
         const clampedY = Math.min(Math.max(60, rawY), maxY);
 
-        setPosition({ x: clampedX, y: clampedY });
+        // Cancel any pending rAF to prevent event buildup
+        if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+        }
+
+        // Direct DOM update via requestAnimationFrame for 120fps butter-smooth movement
+        rafIdRef.current = requestAnimationFrame(() => {
+            if (containerRef.current) {
+                containerRef.current.style.left = `${clampedX}px`;
+                containerRef.current.style.top = `${clampedY}px`;
+            }
+        });
     };
 
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDraggingRef.current) return;
         isDraggingRef.current = false;
+
+        if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+            rafIdRef.current = null;
+        }
+
+        if (containerRef.current) {
+            containerRef.current.style.transition = "";
+            containerRef.current.style.willChange = "auto";
+            const rect = containerRef.current.getBoundingClientRect();
+            setPosition({ x: rect.left, y: rect.top });
+        }
+
         try {
             e.currentTarget.releasePointerCapture(e.pointerId);
         } catch {
-            // ignore if already released
         }
     };
 
@@ -96,8 +133,9 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
 
     useEffect(() => {
 
-        const socket = io('http://localhost:1234/signaling', {
+        const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/signaling`, {
             transports: ["websocket", "polling"],
+            withCredentials: true
         })
 
         const iceCandidatesQueue: RTCIceCandidateInit[] = [];
@@ -311,31 +349,20 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
         return (
             <>
                 {/* Hidden persistent video to keep stream active in DOM */}
-                <video
-                    ref={attachStream}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="hidden"
-                />
+                <video ref={attachStream} autoPlay playsInline muted className="hidden" />
+                <video ref={attachRemoteStream} autoPlay playsInline className="hidden" />
 
-                <video
-                    ref={attachRemoteStream}
-                    autoPlay
-                    playsInline
-                    className="hidden"
-                />
                 <div
                     ref={containerRef}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
                     style={position ? { left: `${position.x}px`, top: `${position.y}px` } : undefined}
-                    className={`fixed z-40 flex items-center gap-2.5 px-3.5 py-2 bg-[#0B1326]/95 border border-slate-700/80 rounded-full shadow-2xl shadow-black/80 backdrop-blur-md animate-in fade-in duration-200 select-none cursor-grab hover:border-[#8083FF]/60 transition-colors ${!position ? 'bottom-5 right-5' : ''}`}
+                    className={`fixed z-40 flex items-center gap-2.5 px-3.5 py-2 bg-white/95 dark:bg-[#0E172E]/95 border border-[#E2E8F0] dark:border-[#1E293B] rounded-full shadow-diffuse dark:shadow-none backdrop-blur-md select-none cursor-grab active:cursor-grabbing hover:border-[#2563EB] dark:hover:border-[#3B82F6] transition-[border-color,box-shadow] duration-150 touch-none ${!position ? 'bottom-5 right-5' : ''}`}
                     title="Drag to reposition"
                 >
                     {/* Grip Icon */}
-                    <svg className="w-3 h-3 text-slate-500 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-[#94A3B8] pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
                         <circle cx="8" cy="6" r="1.8" />
                         <circle cx="16" cy="6" r="1.8" />
                         <circle cx="8" cy="12" r="1.8" />
@@ -345,14 +372,14 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     </svg>
 
                     <span className="relative flex h-2.5 w-2.5 pointer-events-none">
-                        {!isVideoOff && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
-                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isVideoOff ? 'bg-slate-500' : 'bg-emerald-400'}`}></span>
+                        {!isVideoOff && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>}
+                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isVideoOff ? 'bg-slate-400' : 'bg-[#10B981]'}`}></span>
                     </span>
-                    <span className="text-xs font-semibold text-slate-200 pointer-events-none select-none">Camera</span>
+                    <span className="text-xs font-semibold text-[#0F172A] dark:text-white pointer-events-none select-none">Camera</span>
 
                     {/* Status Badges */}
                     {isMuted && (
-                        <span className="p-1 rounded-full bg-rose-500/20 text-rose-400 pointer-events-none" title="Microphone muted">
+                        <span className="p-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 pointer-events-none border border-rose-200 dark:border-rose-800" title="Microphone muted">
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                                 <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -363,7 +390,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     {/* Restore / Expand Button */}
                     <button
                         onClick={() => setIsMinimized(false)}
-                        className="p-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded-full transition cursor-pointer"
+                        className="p-1 text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] rounded-full transition cursor-pointer"
                         title="Restore Video"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,22 +407,22 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
         return (
             <div
                 ref={containerRef}
-                className="fixed inset-4 sm:inset-8 z-50 rounded-2xl bg-[#0B1326]/98 border border-slate-700/90 shadow-2xl shadow-black backdrop-blur-xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+                className="fixed inset-4 sm:inset-8 z-50 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
             >
                 {/* Fullscreen Header */}
-                <div className="h-12 px-5 flex items-center justify-between border-b border-slate-800/80 bg-[#070D1E]/60">
+                <div className="h-12 px-5 flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC] dark:bg-[#0B1326]">
                     <div className="flex items-center gap-2.5">
                         <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10B981]"></span>
                         </span>
-                        <span className="text-sm font-bold text-white tracking-wide">Live Feed</span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Full Screen</span>
+                        <span className="text-sm font-bold text-[#0F172A] dark:text-white tracking-wide">Live Feed</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E293B] text-[#2563EB] dark:text-[#60A5FA] font-semibold border border-[#BFDBFE] dark:border-slate-700">Full Screen</span>
                     </div>
 
                     <button
                         onClick={toggleFullscreen}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1.5 text-xs"
+                        className="p-1.5 rounded-lg text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#E2E8F0] dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
                         title="Exit Fullscreen"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -406,10 +433,10 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                 </div>
 
                 {/* Fullscreen Video Area: Side-by-Side when 2 users, single centered when solo */}
-                <div className={`flex-1 w-full p-4 grid gap-4 bg-[#070D1E] overflow-hidden ${hasRemoteUser ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-4xl mx-auto"
+                <div className={`flex-1 w-full p-4 grid gap-4 bg-[#FAFAFC] dark:bg-[#070D1E] overflow-hidden ${hasRemoteUser ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-4xl mx-auto"
                     }`}>
                     {/* User 1: You */}
-                    <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center shadow-lg">
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#0F172A] border border-[#E2E8F0] dark:border-slate-800 flex items-center justify-center shadow-md">
                         <video
                             ref={attachStream}
                             autoPlay
@@ -432,7 +459,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
 
                     {/* User 2: Remote Peer (Only rendered if connected) */}
                     {hasRemoteUser && (
-                        <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center shadow-lg">
+                        <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#0F172A] border border-[#E2E8F0] dark:border-slate-800 flex items-center justify-center shadow-md">
                             <video
                                 ref={attachRemoteStream}
                                 autoPlay
@@ -454,19 +481,19 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
         <div
             ref={containerRef}
             style={position ? { left: `${position.x}px`, top: `${position.y}px` } : undefined}
-            className={`fixed z-40 w-64 sm:w-72 rounded-2xl overflow-hidden bg-[#0B1326]/95 border border-slate-700/80 shadow-2xl shadow-black/80 backdrop-blur-md flex flex-col group transition-colors hover:border-[#8083FF]/50 ${!position ? 'bottom-5 right-5' : ''}`}
+            className={`fixed z-40 w-64 sm:w-72 rounded-2xl overflow-hidden bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse dark:shadow-none flex flex-col group hover:border-[#2563EB] dark:hover:border-[#3B82F6] transition-[border-color,box-shadow] duration-150 touch-none ${!position ? 'bottom-5 right-5' : ''}`}
         >
             {/* Header / Drag Handle Top Bar */}
             <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
-                className="h-8 px-2.5 flex items-center justify-between bg-[#070D1E]/80 border-b border-slate-800/60 select-none active:cursor-grabbing hover:bg-[#0E172E] transition-colors"
+                className="h-8 px-2.5 flex items-center justify-between bg-[#F8FAFC] dark:bg-[#0B1326] border-b border-[#E2E8F0] dark:border-[#1E293B] select-none cursor-grab active:cursor-grabbing hover:bg-[#F1F5F9] dark:hover:bg-[#15203D] transition-colors touch-none"
                 title="Drag to reposition anywhere"
             >
                 <div className="flex items-center gap-1.5 pointer-events-none">
                     {/* Grip Icon */}
-                    <svg className="w-3.5 h-3.5 text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-[#94A3B8]" fill="currentColor" viewBox="0 0 24 24">
                         <circle cx="8" cy="6" r="1.8" />
                         <circle cx="16" cy="6" r="1.8" />
                         <circle cx="8" cy="12" r="1.8" />
@@ -476,17 +503,17 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     </svg>
 
                     <span className="relative flex h-2 w-2 ml-0.5">
-                        {!isVideoOff && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
-                        <span className={`relative inline-flex rounded-full h-2 w-2 ${isVideoOff ? 'bg-slate-500' : 'bg-emerald-400'}`}></span>
+                        {!isVideoOff && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>}
+                        <span className={`relative inline-flex rounded-full h-2 w-2 ${isVideoOff ? 'bg-slate-400' : 'bg-[#10B981]'}`}></span>
                     </span>
-                    <span className="text-[11px] font-semibold text-slate-300">You (Candidate)</span>
+                    <span className="text-[11px] font-semibold text-[#0F172A] dark:text-white">You (Candidate)</span>
                 </div>
 
                 <div className="flex items-center gap-1">
                     {/* Minimize Button */}
                     <button
                         onClick={() => setIsMinimized(true)}
-                        className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                        className="p-1 rounded text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#E2E8F0] dark:hover:bg-slate-800 transition cursor-pointer"
                         title="Minimize"
                     >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -497,7 +524,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     {/* Fullscreen Button */}
                     <button
                         onClick={toggleFullscreen}
-                        className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                        className="p-1 rounded text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#E2E8F0] dark:hover:bg-slate-800 transition cursor-pointer"
                         title="Fullscreen"
                     >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -508,10 +535,9 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
             </div>
 
             {/* Video Viewport Area */}
-            <div className="relative aspect-video w-full bg-[#070D1E] overflow-hidden flex items-center justify-center">
+            <div className="relative aspect-video w-full bg-[#0F172A] overflow-hidden flex items-center justify-center">
                 {/* 1. MAIN STAGE */}
                 {hasRemoteUser ? (
-                    // When caller is connected, caller takes main view
                     <video
                         ref={attachRemoteStream}
                         autoPlay
@@ -519,7 +545,6 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    // Solo mode: Your camera takes main view
                     <>
                         <video
                             ref={attachStream}
@@ -530,7 +555,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                                 }`}
                         />
                         {isVideoOff && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[#070D1E]">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-[#0F172A]">
                                 <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700/80 flex items-center justify-center text-sm font-bold text-slate-300">
                                     You
                                 </div>
@@ -540,7 +565,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     </>
                 )}
 
-                {/* 2. INSET THUMBNAIL (Your camera floating in the corner when caller is present) */}
+                {/* 2. INSET THUMBNAIL */}
                 {hasRemoteUser && (
                     <div className="absolute bottom-10 right-2 w-20 h-14 rounded-lg overflow-hidden border border-white/20 shadow-2xl bg-black/80 z-10">
                         <video
@@ -578,8 +603,8 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     <button
                         onClick={toggleMic}
                         className={`p-1.5 rounded-lg border backdrop-blur-md transition cursor-pointer flex items-center justify-center shadow-md ${isMuted
-                            ? "bg-rose-500/30 border-rose-500/50 text-rose-300 hover:bg-rose-500/40"
-                            : "bg-[#0B1326]/80 border-slate-700/60 text-slate-200 hover:text-white hover:bg-slate-800"
+                            ? "bg-rose-500 border-rose-600 text-white"
+                            : "bg-white/95 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700"
                             }`}
                         title={isMuted ? "Unmute Microphone" : "Mute Microphone"}
                     >
@@ -592,8 +617,8 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     <button
                         onClick={toggleCamera}
                         className={`p-1.5 rounded-lg border backdrop-blur-md transition cursor-pointer flex items-center justify-center shadow-md ${isVideoOff
-                            ? "bg-rose-500/30 border-rose-500/50 text-rose-300 hover:bg-rose-500/40"
-                            : "bg-[#0B1326]/80 border-slate-700/60 text-slate-200 hover:text-white hover:bg-slate-800"
+                            ? "bg-rose-500 border-rose-600 text-white"
+                            : "bg-white/95 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700"
                             }`}
                         title={isVideoOff ? "Turn Video On" : "Turn Video Off"}
                     >
@@ -604,7 +629,6 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     </button>
                 </div>
             </div>
-
         </div>
     );
 }

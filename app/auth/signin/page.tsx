@@ -47,45 +47,43 @@ export default function Signin() {
     };
 
     return (
-        <div className="relative min-h-screen w-full bg-[#070D1E] text-slate-100 flex items-center justify-center p-4 sm:p-6 overflow-hidden selection:bg-[#8083FF]/30">
-            {/* Background Ambient Glows */}
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-137.5 h-137.5 bg-[#8083FF]/12 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-10 right-10 w-87.5 h-87.5 bg-[#4F46E5]/10 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute top-10 left-10 w-75 h-75 bg-[#38BDF8]/5 rounded-full blur-[90px] pointer-events-none" />
+        <div className="relative min-h-screen w-full bg-[#FAFAFC] text-[#0F172A] flex items-center justify-center p-4 sm:p-6 overflow-hidden font-sans selection:bg-[#EFF6FF] selection:text-[#2563EB]">
+            {/* Background Subtle Accent */}
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#EFF6FF] rounded-full blur-[100px] pointer-events-none" />
 
             {/* Main Auth Card */}
-            <div className="relative z-10 w-full max-w-110">
-                <div className="rounded-3xl bg-[#0E172E]/90 border border-slate-800/90 p-7 sm:p-9 shadow-2xl shadow-black/50 backdrop-blur-xl transition-all">
+            <div className="relative z-10 w-full max-w-md">
+                <div className="rounded-2xl bg-white border border-[#E2E8F0] p-7 sm:p-9 shadow-diffuse transition-all">
                     {/* Header with Brand Logo */}
                     <div className="flex flex-col items-center text-center">
                         <Link href="/" className="inline-flex items-center gap-2.5 group mb-5">
-                            <div className="w-11 h-11 rounded-2xl bg-linear-to-br from-[#8083FF] to-[#4F46E5] flex items-center justify-center shadow-lg shadow-[#8083FF]/25 font-black text-white text-base tracking-wider group-hover:scale-105 transition-transform duration-200">
+                            <div className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center shadow-xs font-black text-white text-base tracking-wider group-hover:scale-105 transition-transform duration-200">
                                 IA
                             </div>
-                            <span className="font-extrabold text-2xl tracking-tight text-white">
-                                Inter<span className="text-[#8083FF]">ACT</span>ier
+                            <span className="font-extrabold text-2xl tracking-tight text-[#0F172A]">
+                                Inter<span className="text-[#2563EB]">ACT</span>ier
                             </span>
                         </Link>
 
-                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                        <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
                             Welcome back
                         </h1>
-                        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                        <p className="text-xs sm:text-sm text-[#4B5563] mt-1">
                             Continue to your collaborative engineering workspace
                         </p>
                     </div>
 
                     {/* Error Banner */}
                     {errorMsg && (
-                        <div className="mt-5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-rose-300 text-xs animate-in fade-in duration-200">
-                            <svg className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="mt-5 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs animate-in fade-in duration-200">
+                            <svg className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span className="leading-relaxed flex-1">{errorMsg}</span>
+                            <span className="leading-relaxed flex-1 font-medium">{errorMsg}</span>
                             <button
                                 type="button"
                                 onClick={() => setErrorMsg("")}
-                                className="text-rose-400/80 hover:text-rose-300 ml-auto cursor-pointer"
+                                className="text-rose-500 hover:text-rose-700 ml-auto cursor-pointer"
                                 aria-label="Dismiss error"
                             >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,11 +97,11 @@ export default function Signin() {
                     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                         {/* Email Field */}
                         <div className="space-y-1.5">
-                            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563]">
                                 Email Address
                             </label>
                             <div className="relative flex items-center">
-                                <span className="absolute left-3.5 text-slate-500 pointer-events-none">
+                                <span className="absolute left-3.5 text-[#94A3B8] pointer-events-none">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                     </svg>
@@ -114,7 +112,7 @@ export default function Signin() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="name@company.com"
-                                    className="w-full rounded-xl bg-[#090E1F]/90 border pl-10 pr-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#8083FF] focus:ring-2 focus:ring-[#8083FF]/20 transition-all"
+                                    className="w-full rounded-xl bg-white border border-[#E2E8F0] pl-10 pr-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#EFF6FF] transition-all"
                                 />
                             </div>
                         </div>
@@ -122,12 +120,12 @@ export default function Signin() {
                         {/* Password Field */}
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                                <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563]">
                                     Password
                                 </label>
                             </div>
                             <div className="relative flex items-center">
-                                <span className="absolute left-3.5 text-slate-500 pointer-events-none">
+                                <span className="absolute left-3.5 text-[#94A3B8] pointer-events-none">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                     </svg>
@@ -138,12 +136,12 @@ export default function Signin() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
-                                    className="w-full rounded-xl bg-[#090E1F]/90 border border-slate-700/70 pl-10 pr-10 py-2.5 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#8083FF]/20 transition-all font-mono"
+                                    className="w-full rounded-xl bg-white border border-[#E2E8F0] pl-10 pr-10 py-2.5 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#EFF6FF] transition-all font-mono"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 text-slate-500 hover:text-slate-300 transition-colors p-1 cursor-pointer"
+                                    className="absolute right-3 text-[#94A3B8] hover:text-[#0F172A] transition-colors p-1 cursor-pointer"
                                     title={showPassword ? "Hide password" : "Show password"}
                                     aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
@@ -166,7 +164,7 @@ export default function Signin() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full rounded-xl bg-linear-to-r from-[#8083FF] to-[#6366F1] hover:from-[#7275fc] hover:to-[#5558e6] text-white font-semibold py-2.5 px-4 shadow-lg shadow-[#8083FF]/25 hover:shadow-[#8083FF]/35 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 flex items-center justify-center gap-2 text-sm"
+                                className="w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-2.5 px-4 shadow-cta hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 flex items-center justify-center gap-2 text-sm cursor-pointer"
                             >
                                 {loading ? (
                                     <>
@@ -189,11 +187,11 @@ export default function Signin() {
                     </form>
 
                     {/* Footer Switcher */}
-                    <div className="mt-6 pt-5 border-t border-slate-800/80 text-center text-xs text-slate-400">
+                    <div className="mt-6 pt-5 border-t border-[#E2E8F0] text-center text-xs text-[#4B5563]">
                         Don't have an account?{" "}
                         <Link
                             href="/auth/signup"
-                            className="font-semibold text-[#A5B4FC] hover:text-white transition-colors underline underline-offset-4 decoration-[#8083FF]/50 hover:decoration-white ml-1"
+                            className="font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors ml-1"
                         >
                             Sign Up
                         </Link>

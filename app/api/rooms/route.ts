@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 
-// GET: Fetch user's recent rooms
 export async function GET(request: NextRequest) {
     try {
         const session = await auth.api.getSession({
@@ -55,10 +54,8 @@ export async function GET(request: NextRequest) {
     }
 }
 
-//GET: Check if the room with roomId exist or not
 
 
-// POST: Create a new room
 export async function POST(request: NextRequest) {
     try {
         const session = await auth.api.getSession({

@@ -1,14 +1,15 @@
-"use client"
-import dynamic from "next/dynamic"
+"use client";
+
+import dynamic from "next/dynamic";
 import "@excalidraw/excalidraw/index.css";
 import { useEffect, useRef, useState } from "react";
-import * as Y from "yjs"
-import { SocketIOProvider } from "y-socket.io";
+import * as Y from "yjs";
 import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import { ExcalidrawBinding, yjsToExcalidraw } from "@mizuka/y-excalidraw";
-import * as random from 'lib0/random'
+import * as random from 'lib0/random';
 import { useRoom } from "../Context/RoomContext";
+import { useTheme } from "../Context/ThemeContext";
 
 const Excalidraw = dynamic(
     async () => ((await import("@excalidraw/excalidraw")).Excalidraw),
@@ -18,23 +19,20 @@ const Excalidraw = dynamic(
 );
 
 export const usercolors = [
-    { color: '#30bced', light: '#30bced33' },
-    { color: '#6eeb83', light: '#6eeb8333' },
-    { color: '#ffbc42', light: '#ffbc4233' },
-    { color: '#ecd444', light: '#ecd44433' },
-    { color: '#ee6352', light: '#ee635233' },
-    { color: '#9ac2c9', light: '#9ac2c933' },
-    { color: '#8acb88', light: '#8acb8833' },
-    { color: '#1be7ff', light: '#1be7ff33' }
-]
+    { color: '#2563EB', light: '#2563EB33' },
+    { color: '#10B981', light: '#10B98133' },
+    { color: '#F59E0B', light: '#F59E0B33' },
+    { color: '#7C3AED', light: '#7C3AED33' },
+    { color: '#EF4444', light: '#EF444433' },
+    { color: '#06B6D4', light: '#06B6D433' },
+    { color: '#EC4899', light: '#EC489933' },
+];
 
-export const userColor = usercolors[random.uint32() % usercolors.length]
-
+export const userColor = usercolors[random.uint32() % usercolors.length];
 
 function getInitialElements(data: unknown): readonly ExcalidrawElement[] {
     if (!data) return [];
     if (data instanceof Y.Array) {
-        console.log(yjsToExcalidraw(data))
         return yjsToExcalidraw(data);
     }
     if (Array.isArray(data)) {
@@ -45,15 +43,13 @@ function getInitialElements(data: unknown): readonly ExcalidrawElement[] {
 
 export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>> | any[] | Record<string, any> | null }) {
     const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
-    const [binding, setBindings] = useState<ExcalidrawBinding | null>(null)
-
+    const [binding, setBindings] = useState<ExcalidrawBinding | null>(null);
 
     const excalidrawRef = useRef<HTMLDivElement | null>(null);
-    const yElementsRef = useRef<Y.Array<Y.Map<any>>>(null)
+    const yElementsRef = useRef<Y.Array<Y.Map<any>>>(null);
     const { yDoc, provider } = useRoom();
+    const { theme } = useTheme();
 
-
-    // jab excalidraw ki api ready hoje tb 
     useEffect(() => {
         if (!excalidrawAPI || !excalidrawRef.current || !yDoc || !provider) return;
 
@@ -65,13 +61,6 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
             ? yElement
             : (sceneElements.length > 0 ? sceneElements : []);
 
-        console.log("[Whiteboard] Binding effect running:", {
-            yElementsLength: yElements.length,
-            rawElementsLength: rawElements.length,
-            sceneElementsLength: sceneElements.length,
-        });
-
-        // Agar yDoc me elements nahi hain aur snapshot ya canvas data available hai, toh yDoc me seed karein
         if (yElements.length === 0 && rawElements.length > 0) {
             yDoc.transact(() => {
                 const maps = rawElements.map((item: any, index: number) => {
@@ -81,7 +70,6 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
                 });
                 yElements.push(maps);
             });
-            console.log("[Whiteboard] Seeded yDoc with", rawElements.length, "elements");
         }
 
         const yAssets = yDoc.getMap('assets');
@@ -94,7 +82,6 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
             { excalidrawDom: excalidrawRef.current, undoManager: new Y.UndoManager(yElements) }
         );
 
-        // Explicitly ensure scene has the elements if yElements has them
         const syncedElements = yjsToExcalidraw(yElements);
         if (syncedElements.length > 0) {
             excalidrawAPI.updateScene({ elements: syncedElements });
@@ -105,28 +92,57 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
         return () => {
             setBindings(null);
             binding.destroy();
-        }
+        };
     }, [excalidrawAPI, yDoc, provider, yElement]);
+
+    // Reactively update Excalidraw theme when user toggles dark/light mode
+    useEffect(() => {
+        if (!excalidrawAPI) return;
+        excalidrawAPI.updateScene({
+            appState: {
+                theme: theme === "dark" ? "dark" : "light",
+                viewBackgroundColor: theme === "dark" ? "#070D1E" : "#FAFAFC",
+                currentItemStrokeColor: theme === "dark" ? "#FFFFFF" : "#0F172A",
+            }
+        });
+    }, [theme, excalidrawAPI]);
+
+    const isDark = theme === "dark";
 
     const initData = {
         elements: getInitialElements(yElement),
         appState: {
-            theme: "dark" as const,
-            viewBackgroundColor: "#070D1E",
-            currentItemStrokeColor: "#ffffff",
+            theme: (isDark ? "dark" : "light") as "dark" | "light",
+            viewBackgroundColor: isDark ? "#070D1E" : "#FAFAFC",
+            currentItemStrokeColor: isDark ? "#FFFFFF" : "#0F172A",
         }
-    }
+    };
 
     return (
-        <div className="relative w-full h-full overflow-hidden bg-[#070D1E]">
-            <div ref={excalidrawRef} className="w-full h-full">
-                <Excalidraw
-                    excalidrawAPI={(api) => setExcalidrawAPI(api)}
-                    initialData={initData}
-                    onPointerUpdate={binding?.onPointerUpdate}
-                    theme="dark"
-                />
+        <div className="relative w-full h-full flex flex-col overflow-hidden dark:bg-[#070D1E] dark:text-[#F8FAFC] transition-colors duration-200">
+            {/* Top Toolbar matching CodeEditor */}
+            <div className="h-11 px-4 relative flex justify-between items-center shrink-0 border-b border-[#E2E8F0] dark:bg-[#0E172E] transition-colors duration-200">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#0F172A]">
+                    <div className="w-6 h-6 rounded-lg bg-[#ECFDF5] text-[#10B981] flex items-center justify-center">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </div>
+                    <span className="dark:text-white">Canvas</span>
+                </div>
+            </div>
+
+            {/* Excalidraw Canvas Area */}
+            <div className="flex-1 w-full min-h-0 relative bg-[#FAFAFC]">
+                <div ref={excalidrawRef} className="w-full h-full">
+                    <Excalidraw
+                        excalidrawAPI={(api) => setExcalidrawAPI(api)}
+                        initialData={initData}
+                        onPointerUpdate={binding?.onPointerUpdate}
+                        theme={isDark ? "dark" : "light"}
+                    />
+                </div>
             </div>
         </div>
     );
-}
+}   
