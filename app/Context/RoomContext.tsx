@@ -26,8 +26,13 @@ export default function RoomContext({ roomId, children }: { roomId: string, chil
     useEffect(() => {
         const doc = new Y.Doc();
 
+        const rawUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:10000";
+        const socketUrl = rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+            ? rawUrl
+            : `${location.protocol}//${rawUrl}`;
+
         const socketProvider = new SocketIOProvider(
-            `${location.protocol}//${process.env.NEXT_PUBLIC_SOCKET_URL}`,
+            socketUrl,
             roomId,
             doc,
             { autoConnect: true }
