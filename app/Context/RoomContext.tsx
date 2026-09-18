@@ -30,13 +30,13 @@ export default function RoomContext({ roomId, children }: { roomId: string, chil
         const socketUrl = rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
             ? rawUrl
             : `${location.protocol}//${rawUrl}`;
-
         const socketProvider = new SocketIOProvider(
             socketUrl,
             roomId,
             doc,
             { autoConnect: true }
-        )
+        );
+
 
         const userColor = usercolors[random.uint32() % usercolors.length];
 

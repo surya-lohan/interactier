@@ -133,8 +133,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
 
     useEffect(() => {
 
-        const socketBaseUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:10000";
-        const socket = io(`${socketBaseUrl}/signaling`, {
+        const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/signaling`, {
             transports: ["websocket", "polling"],
             withCredentials: true
         })
@@ -282,13 +281,7 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                 peerConnection.close();
                 peerConnection = null;
             }
-            if (socket.connected) {
-                socket.disconnect();
-            } else {
-                socket.once("connect", () => {
-                    socket.disconnect();
-                });
-            }
+            socket.disconnect();
         };
     }, [roomId]);
 

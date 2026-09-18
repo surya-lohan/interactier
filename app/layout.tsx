@@ -5,6 +5,7 @@ import "./globals.css";
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -49,10 +50,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body
-        className="min-h-full flex flex-col font-sans bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200"
-        suppressHydrationWarning
-      >
+      <body className="min-h-full flex flex-col font-sans bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200">
         <ThemeProvider>
           {children}
         </ThemeProvider>
