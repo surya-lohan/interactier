@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import "@excalidraw/excalidraw/index.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
@@ -18,6 +18,8 @@ const Excalidraw = dynamic(
     }
 );
 
+import { generateNKeysBetween } from "fractional-indexing";
+
 export const usercolors = [
     { color: '#2563EB', light: '#2563EB33' },
     { color: '#10B981', light: '#10B98133' },
@@ -32,13 +34,51 @@ export const userColor = usercolors[random.uint32() % usercolors.length];
 
 function getInitialElements(data: unknown): readonly ExcalidrawElement[] {
     if (!data) return [];
+    let list: any[] = [];
     if (data instanceof Y.Array) {
-        return yjsToExcalidraw(data);
+        list = yjsToExcalidraw(data);
+    } else if (Array.isArray(data)) {
+        list = data.map((item: any) => (item?.el ? item.el : item));
     }
-    if (Array.isArray(data)) {
-        return data.map((item: any) => (item?.el ? item.el : item));
+
+    if (!list || list.length === 0) return [];
+
+    // Deduplicate elements by ID to avoid index and state collisions
+    const uniqueMap = new Map<string, any>();
+    for (const item of list) {
+        if (item && item.id) {
+            uniqueMap.set(item.id, item);
+        }
     }
-    return [];
+    const uniqueElements = Array.from(uniqueMap.values());
+    if (uniqueElements.length === 0) return [];
+
+    // Ensure strictly valid, ascending fractional indices
+    const keys = generateNKeysBetween(null, null, uniqueElements.length);
+    let needsReindexing = false;
+    const seenIndices = new Set<string>();
+
+    for (let i = 0; i < uniqueElements.length; i++) {
+        const idx = uniqueElements[i]?.index;
+        if (!idx || seenIndices.has(idx)) {
+            needsReindexing = true;
+            break;
+        }
+        if (i > 0 && uniqueElements[i - 1]?.index >= idx) {
+            needsReindexing = true;
+            break;
+        }
+        seenIndices.add(idx);
+    }
+
+    if (needsReindexing) {
+        return uniqueElements.map((el, i) => ({
+            ...el,
+            index: keys[i]
+        }));
+    }
+
+    return uniqueElements;
 }
 
 export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>> | any[] | Record<string, any> | null }) {
@@ -53,45 +93,136 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
     useEffect(() => {
         if (!excalidrawAPI || !excalidrawRef.current || !yDoc || !provider) return;
 
+        let activeBinding: ExcalidrawBinding | null = null;
+        let isCancelled = false;
+
         const yElements = yDoc.getArray<Y.Map<any>>('elements');
         yElementsRef.current = yElements;
-
-        const sceneElements = excalidrawAPI.getSceneElements();
-        const rawElements = (Array.isArray(yElement) && yElement.length > 0)
-            ? yElement
-            : (sceneElements.length > 0 ? sceneElements : []);
-
-        if (yElements.length === 0 && rawElements.length > 0) {
-            yDoc.transact(() => {
-                const maps = rawElements.map((item: any, index: number) => {
-                    const el = item?.el ? item.el : item;
-                    const pos = item?.pos ?? String(index).padStart(6, '0');
-                    return new Y.Map(Object.entries({ pos, el }));
-                });
-                yElements.push(maps);
-            });
-        }
-
         const yAssets = yDoc.getMap('assets');
 
-        const binding = new ExcalidrawBinding(
-            yElements,
-            yAssets,
-            excalidrawAPI,
-            provider.awareness,
-            { excalidrawDom: excalidrawRef.current, undoManager: new Y.UndoManager(yElements) }
-        );
+        const initializeWhiteboard = () => {
+            if (isCancelled || activeBinding) return;
 
-        const syncedElements = yjsToExcalidraw(yElements);
-        if (syncedElements.length > 0) {
-            excalidrawAPI.updateScene({ elements: syncedElements });
+            // 1. Deduplicate any duplicate elements in yElements (heals any corrupted remote doc state)
+            const seenIds = new Set<string>();
+            const duplicatesToRemove: number[] = [];
+            for (let i = 0; i < yElements.length; i++) {
+                const map = yElements.get(i);
+                const el = map?.get("el");
+                if (!el || !el.id || seenIds.has(el.id)) {
+                    duplicatesToRemove.push(i);
+                } else {
+                    seenIds.add(el.id);
+                }
+            }
+
+            if (duplicatesToRemove.length > 0) {
+                yDoc.transact(() => {
+                    for (let i = duplicatesToRemove.length - 1; i >= 0; i--) {
+                        yElements.delete(duplicatesToRemove[i], 1);
+                    }
+                });
+            }
+
+            // 2. Only seed snapshot data if the room is genuinely empty AFTER syncing with server
+            if (yElements.length === 0) {
+                const sceneElements = excalidrawAPI.getSceneElements();
+                const rawElements = (Array.isArray(yElement) && yElement.length > 0)
+                    ? yElement
+                    : (sceneElements.length > 0 ? sceneElements : []);
+
+                if (rawElements.length > 0) {
+                    const uniqueRawMap = new Map<string, any>();
+                    for (const item of rawElements) {
+                        const el = item?.el ? item.el : item;
+                        if (el && el.id) {
+                            uniqueRawMap.set(el.id, item);
+                        }
+                    }
+                    const uniqueRaw = Array.from(uniqueRawMap.values());
+
+                    if (uniqueRaw.length > 0) {
+                        const validKeys = generateNKeysBetween(null, null, uniqueRaw.length);
+                        yDoc.transact(() => {
+                            const maps = uniqueRaw.map((item: any, index: number) => {
+                                const originalEl = item?.el ? item.el : item;
+                                const pos = validKeys[index];
+                                const el = { ...originalEl, index: pos };
+                                return new Y.Map(Object.entries({ pos, el }));
+                            });
+                            yElements.push(maps);
+                        });
+                    }
+                }
+            } else {
+                // Ensure all elements in yElements have valid, distinct indices to prevent Excalidraw Zz >= Zz
+                const count = yElements.length;
+                let hasCollision = false;
+                const seenPos = new Set<string>();
+                for (let i = 0; i < count; i++) {
+                    const map = yElements.get(i);
+                    const pos = map?.get("pos");
+                    const el = map?.get("el");
+                    if (!pos || !el?.index || seenPos.has(pos) || seenPos.has(el.index)) {
+                        hasCollision = true;
+                        break;
+                    }
+                    seenPos.add(pos);
+                    seenPos.add(el.index);
+                }
+
+                if (hasCollision) {
+                    const newKeys = generateNKeysBetween(null, null, count);
+                    yDoc.transact(() => {
+                        for (let i = 0; i < count; i++) {
+                            const map = yElements.get(i);
+                            const el = map?.get("el");
+                            const newPos = newKeys[i];
+                            map.set("pos", newPos);
+                            if (el) {
+                                map.set("el", { ...el, index: newPos });
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 3. Connect ExcalidrawBinding with clean, valid elements
+            activeBinding = new ExcalidrawBinding(
+                yElements,
+                yAssets,
+                excalidrawAPI,
+                provider.awareness,
+                { excalidrawDom: excalidrawRef.current!, undoManager: new Y.UndoManager(yElements) }
+            );
+
+            const syncedElements = yjsToExcalidraw(yElements);
+            if (syncedElements.length > 0) {
+                excalidrawAPI.updateScene({ elements: syncedElements });
+            }
+
+            setBindings(activeBinding);
+        };
+
+        // Wait until provider has synchronized with the server before initializing/seeding
+        if (provider.synced) {
+            initializeWhiteboard();
+        } else {
+            const onSync = (isSynced: boolean) => {
+                if (isSynced) {
+                    initializeWhiteboard();
+                }
+            };
+            provider.on('synced', onSync);
+            provider.on('sync', onSync);
         }
 
-        setBindings(binding);
-
         return () => {
-            setBindings(null);
-            binding.destroy();
+            isCancelled = true;
+            if (activeBinding) {
+                activeBinding.destroy();
+                setBindings(null);
+            }
         };
     }, [excalidrawAPI, yDoc, provider, yElement]);
 
@@ -109,14 +240,15 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
 
     const isDark = theme === "dark";
 
-    const initData = {
+    const initData = useMemo(() => ({
         elements: getInitialElements(yElement),
         appState: {
             theme: (isDark ? "dark" : "light") as "dark" | "light",
             viewBackgroundColor: isDark ? "#070D1E" : "#FAFAFC",
             currentItemStrokeColor: isDark ? "#FFFFFF" : "#0F172A",
         }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }), []);
 
     return (
         <div className="relative w-full h-full flex flex-col overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200">

@@ -41,6 +41,29 @@ export default function CodeEditor({ code }: { code: string }) {
 
             const yText = yDoc.getText('monaco');
 
+            // Seed initial code from snapshot only if the room document is genuinely empty after sync
+            const seedCodeIfEmpty = () => {
+                if (yText.toString() === "" && code) {
+                    yDoc.transact(() => {
+                        yText.insert(0, code);
+                    });
+                }
+            };
+
+            if (provider.synced) {
+                seedCodeIfEmpty();
+            } else {
+                const onSync = (isSynced: boolean) => {
+                    if (isSynced) {
+                        seedCodeIfEmpty();
+                        provider.off('synced', onSync);
+                        provider.off('sync', onSync);
+                    }
+                };
+                provider.on('synced', onSync);
+                provider.on('sync', onSync);
+            }
+
             bindingRef.current = new MonacoBinding(
                 yText,
                 editor.getModel(),
