@@ -27,7 +27,7 @@ export default function RoomContext({ roomId, children }: { roomId: string, chil
         const doc = new Y.Doc();
 
         const socketProvider = new SocketIOProvider(
-            `${location.protocol}//localhost:1234`,
+            `${location.protocol}//${process.env.NEXT_PUBLIC_SOCKET_URL}`,
             roomId,
             doc,
             { autoConnect: true }
