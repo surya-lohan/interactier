@@ -4,6 +4,7 @@ import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import ThemeToggle from "@/app/components/ThemeToggle";
 
 export default function Signin() {
     const [email, setEmail] = useState("");
@@ -47,35 +48,40 @@ export default function Signin() {
     };
 
     return (
-        <div className="relative min-h-screen w-full bg-[#FAFAFC] text-[#0F172A] flex items-center justify-center p-4 sm:p-6 overflow-hidden font-sans selection:bg-[#EFF6FF] selection:text-[#2563EB]">
+        <div className="relative min-h-screen w-full bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-4 sm:p-6 overflow-hidden font-sans selection:bg-[#EFF6FF] selection:text-[#2563EB] transition-colors duration-200">
+            {/* Top Right Theme Toggle */}
+            <div className="absolute top-5 right-5 z-20">
+                <ThemeToggle />
+            </div>
+
             {/* Background Subtle Accent */}
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#EFF6FF] rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#EFF6FF] dark:bg-[#2563EB]/10 rounded-full blur-[100px] pointer-events-none" />
 
             {/* Main Auth Card */}
             <div className="relative z-10 w-full max-w-md">
-                <div className="rounded-2xl bg-white border border-[#E2E8F0] p-7 sm:p-9 shadow-diffuse transition-all">
+                <div className="rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] p-7 sm:p-9 shadow-diffuse dark:shadow-none transition-all">
                     {/* Header with Brand Logo */}
                     <div className="flex flex-col items-center text-center">
                         <Link href="/" className="inline-flex items-center gap-2.5 group mb-5">
                             <div className="w-10 h-10 rounded-xl bg-[#2563EB] flex items-center justify-center shadow-xs font-black text-white text-base tracking-wider group-hover:scale-105 transition-transform duration-200">
                                 IA
                             </div>
-                            <span className="font-extrabold text-2xl tracking-tight text-[#0F172A]">
+                            <span className="font-extrabold text-2xl tracking-tight text-[#0F172A] dark:text-white">
                                 Inter<span className="text-[#2563EB]">ACT</span>ier
                             </span>
                         </Link>
 
-                        <h1 className="text-2xl font-bold text-[#0F172A] tracking-tight">
+                        <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
                             Welcome back
                         </h1>
-                        <p className="text-xs sm:text-sm text-[#4B5563] mt-1">
+                        <p className="text-xs sm:text-sm text-[#4B5563] dark:text-slate-400 mt-1">
                             Continue to your collaborative engineering workspace
                         </p>
                     </div>
 
                     {/* Error Banner */}
                     {errorMsg && (
-                        <div className="mt-5 p-3 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-rose-700 text-xs animate-in fade-in duration-200">
+                        <div className="mt-5 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs animate-in fade-in duration-200">
                             <svg className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -83,7 +89,7 @@ export default function Signin() {
                             <button
                                 type="button"
                                 onClick={() => setErrorMsg("")}
-                                className="text-rose-500 hover:text-rose-700 ml-auto cursor-pointer"
+                                className="text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 ml-auto cursor-pointer"
                                 aria-label="Dismiss error"
                             >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,11 +103,11 @@ export default function Signin() {
                     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                         {/* Email Field */}
                         <div className="space-y-1.5">
-                            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563]">
+                            <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563] dark:text-slate-400">
                                 Email Address
                             </label>
                             <div className="relative flex items-center">
-                                <span className="absolute left-3.5 text-[#94A3B8] pointer-events-none">
+                                <span className="absolute left-3.5 text-[#94A3B8] dark:text-slate-500 pointer-events-none">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                                     </svg>
@@ -112,7 +118,7 @@ export default function Signin() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="name@company.com"
-                                    className="w-full rounded-xl bg-white border border-[#E2E8F0] pl-10 pr-3.5 py-2.5 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#EFF6FF] transition-all"
+                                    className="w-full rounded-xl bg-white dark:bg-[#15203D] border border-[#E2E8F0] dark:border-slate-700 pl-10 pr-3.5 py-2.5 text-sm text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder:text-slate-500 focus:outline-none focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:ring-2 focus:ring-[#EFF6FF] dark:focus:ring-[#2563EB]/20 transition-all"
                                 />
                             </div>
                         </div>
@@ -120,12 +126,12 @@ export default function Signin() {
                         {/* Password Field */}
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563]">
+                                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#4B5563] dark:text-slate-400">
                                     Password
                                 </label>
                             </div>
                             <div className="relative flex items-center">
-                                <span className="absolute left-3.5 text-[#94A3B8] pointer-events-none">
+                                <span className="absolute left-3.5 text-[#94A3B8] dark:text-slate-500 pointer-events-none">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                     </svg>
@@ -136,12 +142,12 @@ export default function Signin() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••••••"
-                                    className="w-full rounded-xl bg-white border border-[#E2E8F0] pl-10 pr-10 py-2.5 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#EFF6FF] transition-all font-mono"
+                                    className="w-full rounded-xl bg-white dark:bg-[#15203D] border border-[#E2E8F0] dark:border-slate-700 pl-10 pr-10 py-2.5 text-sm text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] dark:placeholder:text-slate-500 focus:outline-none focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:ring-2 focus:ring-[#EFF6FF] dark:focus:ring-[#2563EB]/20 transition-all font-mono"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 text-[#94A3B8] hover:text-[#0F172A] transition-colors p-1 cursor-pointer"
+                                    className="absolute right-3 text-[#94A3B8] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white transition-colors p-1 cursor-pointer"
                                     title={showPassword ? "Hide password" : "Show password"}
                                     aria-label={showPassword ? "Hide password" : "Show password"}
                                 >
@@ -164,7 +170,7 @@ export default function Signin() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-2.5 px-4 shadow-cta hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 flex items-center justify-center gap-2 text-sm cursor-pointer"
+                                className="w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:hover:bg-[#1D4ED8] text-white font-semibold py-2.5 px-4 shadow-cta hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 flex items-center justify-center gap-2 text-sm cursor-pointer"
                             >
                                 {loading ? (
                                     <>
@@ -187,11 +193,11 @@ export default function Signin() {
                     </form>
 
                     {/* Footer Switcher */}
-                    <div className="mt-6 pt-5 border-t border-[#E2E8F0] text-center text-xs text-[#4B5563]">
+                    <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E293B] text-center text-xs text-[#4B5563] dark:text-slate-400">
                         Don't have an account?{" "}
                         <Link
                             href="/auth/signup"
-                            className="font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors ml-1"
+                            className="font-semibold text-[#2563EB] dark:text-[#60A5FA] hover:text-[#1D4ED8] dark:hover:text-blue-300 transition-colors ml-1"
                         >
                             Sign Up
                         </Link>

@@ -119,21 +119,21 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
     };
 
     return (
-        <div className="relative w-full h-full flex flex-col overflow-hidden dark:bg-[#070D1E] dark:text-[#F8FAFC] transition-colors duration-200">
+        <div className="relative w-full h-full flex flex-col overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200">
             {/* Top Toolbar matching CodeEditor */}
-            <div className="h-11 px-4 relative flex justify-between items-center shrink-0 border-b border-[#E2E8F0] dark:bg-[#0E172E] transition-colors duration-200">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#0F172A]">
-                    <div className="w-6 h-6 rounded-lg bg-[#ECFDF5] text-[#10B981] flex items-center justify-center">
+            <div className="h-11 px-4 relative flex justify-between items-center shrink-0 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white dark:bg-[#0E172E] transition-colors duration-200">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#0F172A] dark:text-white">
+                    <div className="w-6 h-6 rounded-lg bg-[#ECFDF5] dark:bg-emerald-950/40 text-[#10B981] dark:text-emerald-400 flex items-center justify-center">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                     </div>
-                    <span className="dark:text-white">Canvas</span>
+                    <span>Canvas</span>
                 </div>
             </div>
 
             {/* Excalidraw Canvas Area */}
-            <div className="flex-1 w-full min-h-0 relative bg-[#FAFAFC]">
+            <div className="flex-1 w-full min-h-0 relative bg-[#FAFAFC] dark:bg-[#070D1E]">
                 <div ref={excalidrawRef} className="w-full h-full">
                     <Excalidraw
                         excalidrawAPI={(api) => setExcalidrawAPI(api)}

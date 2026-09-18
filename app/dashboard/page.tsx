@@ -289,7 +289,7 @@ export default function DashboardPage() {
                                         type="text"
                                         name="roomId"
                                         placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-                                        className="w-full bg-white dark:bg-[#15203D] border border-[#E2E8F0] dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-[#0F172A] dark:text-white font-mono focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#EFF6FF] transition"
+                                        className="w-full bg-white dark:bg-[#15203D] border border-[#E2E8F0] dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-[#0F172A] dark:text-white font-mono focus:outline-none focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:ring-2 focus:ring-[#EFF6FF] dark:focus:ring-[#2563EB]/20 transition"
                                     />
                                 </div>
 
@@ -316,7 +316,7 @@ export default function DashboardPage() {
 
                 {/* Feature Overview Section */}
                 <section className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4">
-                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse flex items-start gap-4">
+                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse dark:shadow-none flex items-start gap-4">
                         <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] dark:bg-[#1E293B] text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -330,8 +330,8 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] dark:bg-[#1E293B] text-[#10B981] flex items-center justify-center shrink-0">
+                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse dark:shadow-none flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] dark:bg-emerald-950/40 text-[#10B981] dark:text-emerald-400 flex items-center justify-center shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                             </svg>
@@ -344,8 +344,8 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#F5F3FF] dark:bg-[#1E293B] text-[#7C3AED] dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <div className="p-6 rounded-2xl bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-[#1E293B] shadow-diffuse dark:shadow-none flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#F5F3FF] dark:bg-purple-950/40 text-[#7C3AED] dark:text-purple-400 flex items-center justify-center shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
