@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as Y from "yjs";
 import { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
-import { ExcalidrawBinding, yjsToExcalidraw } from "@mizuka/y-excalidraw";
+import { ExcalidrawBinding, yjsToExcalidraw } from "@/lib/y-excalidraw";
 import * as random from 'lib0/random';
 import { useRoom } from "../Context/RoomContext";
 import { useTheme } from "../Context/ThemeContext";

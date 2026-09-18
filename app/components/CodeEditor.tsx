@@ -36,40 +36,44 @@ export default function CodeEditor({ code }: { code: string }) {
         let cancelled = false;
 
         const createBinding = async () => {
-            const { MonacoBinding } = await import("y-monaco");
-            if (cancelled) return;
+            try {
+                const { MonacoBinding } = await import("y-monaco");
+                if (cancelled) return;
 
-            const yText = yDoc.getText('monaco');
+                const yText = yDoc.getText('monaco');
 
-            // Seed initial code from snapshot only if the room document is genuinely empty after sync
-            const seedCodeIfEmpty = () => {
-                if (yText.toString() === "" && code) {
-                    yDoc.transact(() => {
-                        yText.insert(0, code);
-                    });
-                }
-            };
-
-            if (provider.synced) {
-                seedCodeIfEmpty();
-            } else {
-                const onSync = (isSynced: boolean) => {
-                    if (isSynced) {
-                        seedCodeIfEmpty();
-                        provider.off('synced', onSync);
-                        provider.off('sync', onSync);
+                // Seed initial code from snapshot only if the room document is genuinely empty after sync
+                const seedCodeIfEmpty = () => {
+                    if (yText.toString() === "" && code) {
+                        yDoc.transact(() => {
+                            yText.insert(0, code);
+                        });
                     }
                 };
-                provider.on('synced', onSync);
-                provider.on('sync', onSync);
-            }
 
-            bindingRef.current = new MonacoBinding(
-                yText,
-                editor.getModel(),
-                new Set([editor]),
-                provider.awareness
-            );
+                if (provider.synced) {
+                    seedCodeIfEmpty();
+                } else {
+                    const onSync = (isSynced: boolean) => {
+                        if (isSynced) {
+                            seedCodeIfEmpty();
+                            provider.off('synced', onSync);
+                            provider.off('sync', onSync);
+                        }
+                    };
+                    provider.on('synced', onSync);
+                    provider.on('sync', onSync);
+                }
+
+                bindingRef.current = new MonacoBinding(
+                    yText,
+                    editor.getModel(),
+                    new Set([editor]),
+                    provider.awareness
+                );
+            } catch (err) {
+                console.warn("Monaco binding error caught safely:", err);
+            }
         };
 
         createBinding();
@@ -77,7 +81,9 @@ export default function CodeEditor({ code }: { code: string }) {
         return () => {
             cancelled = true;
             if (bindingRef.current) {
-                bindingRef.current.destroy();
+                try {
+                    bindingRef.current.destroy();
+                } catch { }
                 bindingRef.current = null;
             }
         };
