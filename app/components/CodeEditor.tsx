@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRef, useEffect, useState } from 'react';
-import { MonacoBinding } from 'y-monaco';
+import type { MonacoBinding } from 'y-monaco';
 import { useRoom } from '../Context/RoomContext';
 import { useTheme } from '../Context/ThemeContext';
 
@@ -34,6 +34,71 @@ export default function CodeEditor({ code }: { code: string }) {
         if (!editor || !yDoc || !provider) return;
 
         let cancelled = false;
+        let awarenessListenerRegistered = false;
+        // Track injected style elements so we can remove them on cleanup
+        const injectedStyleIds = new Set<string>();
+
+        const syncCursorStyles = () => {
+            if (!provider.awareness) return;
+            const states = provider.awareness.getStates() as Map<number, any>;
+            states.forEach((state, clientId) => {
+                // Skip our own cursor
+                if (clientId === provider.awareness.clientID) return;
+                const user = state?.user;
+                if (!user?.color) return;
+
+                const styleId = `y-monaco-cursor-${clientId}`;
+                injectedStyleIds.add(styleId);
+
+                let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
+                if (!styleEl) {
+                    styleEl = document.createElement("style");
+                    styleEl.id = styleId;
+                    document.head.appendChild(styleEl);
+                }
+
+                const name = (user.name as string) || `User ${clientId}`;
+                const color = user.color as string;
+                // Derive a semi-transparent version of the color for selection background
+                const colorLight = user.colorLight || `${color}33`;
+
+                // Sanitize name: strip chars that would break CSS content string
+                const safeName = name.replace(/[\\'"\n\r]/g, (c) =>
+                    c === "'" ? "\\'" : c === '"' ? '\\"' : c === '\\' ? '\\\\' : ' '
+                );
+
+                styleEl.textContent = `
+                    .yRemoteSelectionHead-${clientId} {
+                        border-left: 2px solid ${color} !important;
+                        position: relative;
+                        overflow: visible !important;
+                    }
+                    .yRemoteSelectionHead-${clientId}::before {
+                        content: '${safeName}';
+                        position: absolute;
+                        top: 100%;
+                        left: -2px;
+                        background-color: ${color};
+                        color: #ffffff;
+                        font-size: 10px;
+                        font-weight: 600;
+                        font-family: ui-sans-serif, system-ui, sans-serif;
+                        padding: 2px 6px;
+                        border-radius: 0 4px 4px 4px;
+                        white-space: nowrap;
+                        pointer-events: none;
+                        z-index: 100;
+                        line-height: 1.5;
+                        letter-spacing: 0.01em;
+                        display: block;
+                        opacity: 1;
+                    }
+                    .yRemoteSelection-${clientId} {
+                        background-color: ${colorLight} !important;
+                    }
+                `;
+            });
+        };
 
         const createBinding = async () => {
             try {
@@ -71,6 +136,14 @@ export default function CodeEditor({ code }: { code: string }) {
                     new Set([editor]),
                     provider.awareness
                 );
+
+                // Sync cursor styles immediately and on every awareness change.
+                // Guard: only register if component is still mounted.
+                if (!cancelled && provider.awareness) {
+                    syncCursorStyles();
+                    provider.awareness.on('change', syncCursorStyles);
+                    awarenessListenerRegistered = true;
+                }
             } catch (err) {
                 console.warn("Monaco binding error caught safely:", err);
             }
@@ -80,6 +153,15 @@ export default function CodeEditor({ code }: { code: string }) {
 
         return () => {
             cancelled = true;
+            // Only unregister if the listener was actually registered
+            if (awarenessListenerRegistered && provider.awareness) {
+                provider.awareness.off('change', syncCursorStyles);
+                awarenessListenerRegistered = false;
+            }
+            // Remove all injected cursor style tags
+            injectedStyleIds.forEach((id) => {
+                document.getElementById(id)?.remove();
+            });
             if (bindingRef.current) {
                 try {
                     bindingRef.current.destroy();
@@ -88,6 +170,7 @@ export default function CodeEditor({ code }: { code: string }) {
             }
         };
     }, [editor, yDoc, provider]);
+
 
     // Reactively update editor theme when user toggles dark/light mode
     useEffect(() => {

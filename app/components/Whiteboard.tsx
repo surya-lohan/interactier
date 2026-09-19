@@ -95,6 +95,7 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
 
         let activeBinding: ExcalidrawBinding | null = null;
         let isCancelled = false;
+        let stabilizationTimer: ReturnType<typeof setTimeout> | null = null;
 
         const yElements = yDoc.getArray<Y.Map<any>>('elements');
         yElementsRef.current = yElements;
@@ -124,12 +125,13 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
                 });
             }
 
-            // 2. Only seed snapshot data if the room is genuinely empty AFTER syncing with server
+            // 2. Only seed snapshot data if the room is genuinely empty AFTER syncing with server.
+            // IMPORTANT: We only seed if yElements is still empty — remote data takes priority.
+            // Never seed from local sceneElements (which are empty after reload) to avoid overwriting
+            // existing server data.
             if (yElements.length === 0) {
-                const sceneElements = excalidrawAPI.getSceneElements();
-                const rawElements = (Array.isArray(yElement) && yElement.length > 0)
-                    ? yElement
-                    : (sceneElements.length > 0 ? sceneElements : []);
+                // Only seed from the explicit yElement prop (snapshot passed from parent)
+                const rawElements = (Array.isArray(yElement) && yElement.length > 0) ? yElement : [];
 
                 if (rawElements.length > 0) {
                     const uniqueRawMap = new Map<string, any>();
@@ -198,19 +200,34 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
 
             const syncedElements = yjsToExcalidraw(yElements);
             if (syncedElements.length > 0) {
-                excalidrawAPI.updateScene({ elements: syncedElements });
+                excalidrawAPI.updateScene({ elements: syncedElements, appState: {}, captureUpdate: "NEVER" as any });
             }
 
             setBindings(activeBinding);
         };
 
-        // Wait until provider has synchronized with the server before initializing/seeding
+        // Wait until provider has synchronized with the server before initializing/seeding.
+        // After sync fires, wait a short stabilization period so that any buffered YDoc updates
+        // from the server have time to arrive before we check if yElements is empty.
+        // This prevents the race condition where synced=true but data hasn't been applied yet,
+        // which would incorrectly treat a non-empty room as empty and overwrite server data.
+        const STABILIZATION_DELAY_MS = 350;
+
+        const onSyncedAndStabilized = () => {
+            if (isCancelled) return;
+            stabilizationTimer = setTimeout(() => {
+                if (!isCancelled) initializeWhiteboard();
+            }, STABILIZATION_DELAY_MS);
+        };
+
         if (provider.synced) {
-            initializeWhiteboard();
+            onSyncedAndStabilized();
         } else {
             const onSync = (isSynced: boolean) => {
                 if (isSynced) {
-                    initializeWhiteboard();
+                    provider.off('synced', onSync);
+                    provider.off('sync', onSync);
+                    onSyncedAndStabilized();
                 }
             };
             provider.on('synced', onSync);
@@ -219,6 +236,7 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
 
         return () => {
             isCancelled = true;
+            if (stabilizationTimer !== null) clearTimeout(stabilizationTimer);
             if (activeBinding) {
                 activeBinding.destroy();
                 setBindings(null);
@@ -247,7 +265,7 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
             viewBackgroundColor: isDark ? "#070D1E" : "#FAFAFC",
             currentItemStrokeColor: isDark ? "#FFFFFF" : "#0F172A",
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }), []);
 
     return (

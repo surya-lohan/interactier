@@ -376,7 +376,7 @@ export class ExcalidrawBinding {
                     return key1 > key2 ? 1 : key1 < key2 ? -1 : 0;
                 });
 
-                this.api.updateScene({ elements });
+                this.api.updateScene({ elements, appState: {}, captureUpdate: "NEVER" as any });
             } catch (err) {
                 console.warn("Whiteboard remote change error handled safely:", err);
             }
@@ -448,7 +448,7 @@ export class ExcalidrawBinding {
                 const key2 = b.pos;
                 return key1 > key2 ? 1 : key1 < key2 ? -1 : 0;
             });
-            this.api.updateScene({ elements: initialValue });
+            this.api.updateScene({ elements: initialValue, appState: {}, captureUpdate: "NEVER" as any });
 
             if (this.yAssets) {
                 this.api.addFiles([...this.yAssets.keys()].map((key) => this.yAssets?.get(key)));

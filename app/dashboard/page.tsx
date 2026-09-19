@@ -14,6 +14,9 @@ export default function DashboardPage() {
 
     const [roomId, setRoomId] = useState("");
     const [copied, setCopied] = useState(false);
+    const [createRoomLoading, setCreateRoomLoading] = useState(false);
+    const [joinRoomLoading, setJoinRoomLoading] = useState(false);
+
     const joinRoomInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
@@ -22,13 +25,14 @@ export default function DashboardPage() {
         }
     }, [isPending, session, router]);
 
-    const handleCreateRoom = async (e: React.FormEvent) => {
+    const handleCreateRoom = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-
+        setCreateRoomLoading(true)
         try {
             const response = await axios.post('/api/rooms');
             const createdRoomId = response.data.roomId;
             setRoomId(createdRoomId);
+            setCreateRoomLoading(false);
         } catch (error) {
             console.log("Getting trouble creating room!", error);
         }
@@ -175,15 +179,6 @@ export default function DashboardPage() {
                                             Interviewer (Host)
                                         </button>
 
-                                        <button
-                                            type="button"
-                                            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold border bg-[#F8FAFC] dark:bg-[#15203D] border-[#E2E8F0] dark:border-slate-700 text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white transition"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                            Candidate / Peer
-                                        </button>
                                     </div>
                                 </div>
 
@@ -192,10 +187,10 @@ export default function DashboardPage() {
                                         type="submit"
                                         className="w-full flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold py-3.5 px-6 rounded-xl transition duration-200 shadow-cta cursor-pointer"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className={createRoomLoading ? "w-5 h-5 animate-spin" : "w-5 h-5"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                         </svg>
-                                        <span>Create Room</span>
+                                        <span>{createRoomLoading ? "Creating room..." : "Create room"}</span>
                                     </button>
                                 </div>
 

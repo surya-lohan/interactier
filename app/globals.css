@@ -48,33 +48,28 @@ body {
 
 
 /* y-monaco remote cursor markers */
-/* Remote user cursor flag */
+/* Base styles — per-user color/name are injected dynamically by CodeEditor.tsx */
 .yRemoteSelectionHead {
   position: absolute;
-  border-left: 2px solid;
-  border-bottom: 2px solid;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   height: 100%;
   box-sizing: border-box;
+  overflow: visible !important;
 }
 
-/* Remote user selection background */
+/* Allow ::before name labels to show above Monaco's clipping layers */
+.monaco-editor .view-overlays,
+.monaco-editor .cursors-layer,
+.monaco-editor .view-layer {
+  overflow: visible !important;
+}
+
+/* Fallback selection background if dynamic style hasn't loaded yet */
 .yRemoteSelection {
-  background-color: rgba(241, 174, 29, 0.886);
-  /* Opacity add karna mat bhoolna */
+  background-color: rgba(100, 116, 139, 0.25);
 }
 
-/* User name tag on hover or always visible */
-.yRemoteSelectionHead::after {
-  content: attr(data-clientid);
-  /* Tum provider se actual name pass kar sakte ho */
-  position: absolute;
-  top: -15px;
-  left: 0;
-  font-size: 10px;
-  background: inherit;
-  color: white;
-  padding: 2px 4px;
-}
 
 /* Monaco Suggest Widget & Hover Polish */
 .monaco-editor .suggest-widget {

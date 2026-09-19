@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 export default function Mediacomponent({ roomId }: { roomId: string }) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -134,12 +134,20 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
     useEffect(() => {
 
         const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/signaling`, {
-            transports: ["websocket", "polling"],
-            withCredentials: true
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 10000,
+            randomizationFactor: 0.5,
         })
 
-        const iceCandidatesQueue: RTCIceCandidateInit[] = [];
+
         let peerConnection: RTCPeerConnection | null = null;
+        let iceRestartTimer: string | number | NodeJS.Timeout | undefined = undefined;
+        let isPolite = false;
+        let makingOffer = false;
+        let ignoreOffer = false;
 
         socket.on("room-full", () => {
             console.warn("room is full!")
@@ -158,8 +166,9 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
 
             pc.onicecandidate = (e) => {
                 if (e.candidate) {
-                    socket.emit("ice-candidate", e.candidate);
+                    socket.emit("signal", { candidate: e.candidate })
                 }
+
             }
 
             pc.ontrack = (e) => {
@@ -176,6 +185,38 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     remoteVideoref.current.play().catch(() => { })
                 }
                 setHasRemoteUser(true);
+            }
+
+            pc.oniceconnectionstatechange = () => {
+                const state = pc.iceConnectionState;
+
+                if (state === "disconnected") {
+                    iceRestartTimer = setTimeout(() => {
+                        if (pc.iceConnectionState === "disconnected") {
+                            pc.restartIce();
+                        }
+                    }, 3000)
+                } else if (state === "failed") {
+                    clearTimeout(iceRestartTimer);
+                    pc.restartIce();
+                } else if (state === "connected") {
+                    clearTimeout(iceRestartTimer);
+                }
+            }
+
+            pc.onnegotiationneeded = async () => {
+                try {
+                    makingOffer = true;
+
+                    await pc.setLocalDescription();
+
+                    socket.emit("signal", { description: pc.localDescription })
+                } catch (error) {
+                    console.error("Negotiation error", error)
+                } finally {
+                    makingOffer = false;
+                }
+
             }
 
             pcRef.current = pc;
@@ -197,53 +238,68 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
 
                 peerConnection = createPeerConnection(stream);
 
-                socket.on("user-joined", async () => {
-                    if (!peerConnection) return;
-                    if (peerConnection.signalingState !== "stable") return;
-                    const offer = await peerConnection.createOffer();
-                    await peerConnection.setLocalDescription(offer);
-                    socket.emit("offer", offer);
-                })
+                socket.on("signal", async ({ senderId, description, candidate }) => {
+                    try {
+                        const pc = pcRef.current;
 
-                socket.on("offer", async (offer) => {
-                    if (!peerConnection) return;
-                    if (peerConnection.signalingState !== "stable") return;
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-
-                    while (iceCandidatesQueue.length > 0) {
-                        const candidate = iceCandidatesQueue.shift();
-                        if (candidate) {
-                            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                        if (!pc) {
+                            return;
                         }
+
+                        if (senderId && socket.id) {
+                            isPolite = socket.id < senderId;
+                        }
+
+                        if (description) {
+                            const offerCollision = description.type === "offer" && (makingOffer || pc.signalingState !== "stable");
+
+                            ignoreOffer = !isPolite && offerCollision;
+
+                            if (ignoreOffer) {
+                                return;
+                            }
+
+                            if (offerCollision) {
+                                await pc.setLocalDescription({
+                                    type: "rollback"
+                                })
+                            }
+
+                            await pc.setRemoteDescription(description);
+
+                            if (description.type === "offer") {
+                                await pc.setLocalDescription();
+                                socket.emit("signal", { description: pc.localDescription })
+                            }
+                        } else if (candidate) {
+                            try {
+                                await pc.addIceCandidate(candidate);
+                            } catch (error) {
+                                if (!ignoreOffer) {
+                                    throw error
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.log("Signaling error", error)
                     }
-
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    socket.emit("answer", answer);
-
                 })
 
-                socket.on("answer", async (answer) => {
-                    if (!peerConnection) return;
-                    if (peerConnection.signalingState !== "have-local-offer") return;
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                socket.io.on("reconnect", () => {
+                    socket.emit("join-room", roomId)
+                })
 
-                    while (iceCandidatesQueue.length > 0) {
-                        const candidate = iceCandidatesQueue.shift();
-                        if (candidate) {
-                            await
-                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                socket.on("user-joined", () => {
+                    if (pcRef.current?.localDescription) {
+                        socket.emit("signal", { description: pcRef.current.localDescription })
+                    }
+                    if (streamRef.current) {
+                        if (peerConnection) {
+                            peerConnection.close();
                         }
+                        peerConnection = createPeerConnection(streamRef.current);
                     }
                 });
-
-                socket.on("ice-candidate", async (candidate) => {
-                    if (peerConnection && peerConnection.remoteDescription) {
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                    } else {
-                        iceCandidatesQueue.push(candidate);
-                    }
-                })
 
                 socket.on("user-left", () => {
                     setHasRemoteUser(false);
@@ -253,9 +309,8 @@ export default function Mediacomponent({ roomId }: { roomId: string }) {
                     }
                     if (peerConnection) {
                         peerConnection.close();
-                        if (streamRef.current) {
-                            peerConnection = createPeerConnection(streamRef.current)
-                        }
+                        peerConnection = null;
+                        pcRef.current = null;
                     }
                 })
 

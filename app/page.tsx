@@ -123,22 +123,6 @@ export default function HomePage() {
         {/* HERO SECTION */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-20 sm:pb-24">
           {/* Centered Top Announcement Pill */}
-          <div className="flex justify-center mb-10">
-            <a
-              href="#architecture"
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E293B]/70 border border-[#DBEAFE] dark:border-slate-700 text-[#2563EB] dark:text-[#60A5FA] text-xs sm:text-[13px] font-semibold hover:bg-[#E0EDFF] dark:hover:bg-[#1E293B] transition-all group"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#2563EB] dark:bg-[#3B82F6] animate-pulse" />
-              <span>NEW: Peer-to-Peer WebRTC Mesh + Yjs CRDTs</span>
-              <span className="text-[#93C5FD] dark:text-slate-600">|</span>
-              <span className="font-medium text-[#1D4ED8] dark:text-[#93C5FD] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                Read specs
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </a>
-          </div>
 
           {/* Split 2-Column Hero */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
@@ -212,74 +196,10 @@ export default function HomePage() {
                   <span className="font-medium">End-to-end encrypted</span>
                 </div>
               </div>
-
-              {/* Avatar Stack with Review Rating Gold Stars */}
-              <div className="pt-5 border-t border-[#E2E8F0] dark:border-[#1E293B] w-full max-w-lg flex items-center gap-4">
-                {/* Avatars */}
-                <div className="flex -space-x-2.5 overflow-hidden">
-                  <div className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#070D1E] bg-[#EFF6FF] dark:bg-blue-950/60 flex items-center justify-center font-bold text-xs text-[#2563EB] dark:text-[#60A5FA]">
-                    SK
-                  </div>
-                  <div className="inline-block h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#070D1E] bg-[#ECFDF5] dark:bg-emerald-950/60 flex items-center justify-center font-bold text-xs text-[#10B981] dark:text-emerald-400">
-                    MR
-                  </div>
-                  <div className="h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#070D1E] bg-[#FEF3C7] dark:bg-amber-950/60 flex items-center justify-center font-bold text-xs text-[#D97706] dark:text-amber-400">
-                    AL
-                  </div>
-                  <div className="h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#070D1E] bg-[#F5F3FF] dark:bg-purple-950/60 flex items-center justify-center font-bold text-xs text-[#7C3AED] dark:text-purple-400">
-                    JD
-                  </div>
-                  <div className="h-9 w-9 rounded-full ring-2 ring-white dark:ring-[#070D1E] bg-slate-900 dark:bg-slate-800 text-white font-bold text-[10px] flex items-center justify-center">
-                    +1.4k
-                  </div>
-                </div>
-
-                {/* Rating & Reviews */}
-                <div className="flex flex-col text-left">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-[#F59E0B]" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="ml-1 text-xs font-bold text-[#0F172A] dark:text-white">4.98 / 5.0</span>
-                  </div>
-                  <span className="text-xs text-[#4B5563] dark:text-slate-400">
-                    Trusted by hiring leads at top tech engineering teams
-                  </span>
-                </div>
-              </div>
             </div>
 
-            {/* Right Column: Hero Visual with Circular Floating Chips */}
+            {/* Right Column: Hero Visual */}
             <div className="lg:col-span-6 relative">
-              {/* Floating Chips / Nodes flanking the visual */}
-              {/* Top-Left Floating Chip */}
-              <div className="absolute -top-4 -left-4 z-20 hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-slate-700 shadow-diffuse dark:shadow-none text-xs font-semibold text-[#0F172A] dark:text-white animate-bounce duration-1000">
-                <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
-                <span>⚡ Sub-40ms CRDT Sync</span>
-              </div>
-
-              {/* Top-Right Floating Chip */}
-              <div className="absolute -top-5 -right-3 z-20 hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-slate-700 shadow-diffuse dark:shadow-none text-xs font-semibold text-[#0F172A] dark:text-slate-200">
-                <div className="w-4 h-4 rounded-full bg-[#EFF6FF] dark:bg-[#1E293B] text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center font-mono text-[10px] font-bold">
-                  TS
-                </div>
-                <span>Monaco 60 FPS Editor</span>
-              </div>
-
-              {/* Bottom-Left Floating Chip */}
-              <div className="absolute -bottom-5 -left-3 z-20 hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-slate-700 shadow-diffuse dark:shadow-none text-xs font-semibold text-[#0F172A] dark:text-white">
-                <span className="text-emerald-500 font-bold">🎨</span>
-                <span>Infinite Canvas (Excalidraw)</span>
-              </div>
-
-              {/* Bottom-Right Floating Chip */}
-              <div className="absolute -bottom-4 -right-3 z-20 hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-slate-700 shadow-diffuse dark:shadow-none text-xs font-semibold text-[#0F172A] dark:text-white">
-                <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-                <span>WebRTC 1080p P2P Mesh</span>
-              </div>
-
               {/* Main Product Showcase Card */}
               <div
                 id="workspace"
