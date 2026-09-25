@@ -81,7 +81,13 @@ function getInitialElements(data: unknown): readonly ExcalidrawElement[] {
     return uniqueElements;
 }
 
-export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>> | any[] | Record<string, any> | null }) {
+interface WhiteboardProps {
+    yElement?: Y.Array<Y.Map<any>> | any[] | Record<string, any> | null;
+    isMaximized?: boolean;
+    onToggleMaximize?: () => void;
+}
+
+export default function Whiteboard({ yElement, isMaximized, onToggleMaximize }: WhiteboardProps) {
     const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
     const [binding, setBindings] = useState<ExcalidrawBinding | null>(null);
 
@@ -124,13 +130,9 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
                     }
                 });
             }
-
-            // 2. Only seed snapshot data if the room is genuinely empty AFTER syncing with server.
-            // IMPORTANT: We only seed if yElements is still empty — remote data takes priority.
-            // Never seed from local sceneElements (which are empty after reload) to avoid overwriting
-            // existing server data.
+            // Never seed from local sceneElements (which are empty after reload) to avoid overwriting existing server data.
             if (yElements.length === 0) {
-                // Only seed from the explicit yElement prop (snapshot passed from parent)
+                // Only seed from the explicit yElement prop
                 const rawElements = (Array.isArray(yElement) && yElement.length > 0) ? yElement : [];
 
                 if (rawElements.length > 0) {
@@ -205,10 +207,6 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
 
             setBindings(activeBinding);
         };
-
-        // Wait until provider has synchronized with the server before initializing/seeding.
-        // After sync fires, wait a short stabilization period so that any buffered YDoc updates
-        // from the server have time to arrive before we check if yElements is empty.
         // This prevents the race condition where synced=true but data hasn't been applied yet,
         // which would incorrectly treat a non-empty room as empty and overwrite server data.
         const STABILIZATION_DELAY_MS = 350;
@@ -269,16 +267,36 @@ export default function Whiteboard({ yElement }: { yElement?: Y.Array<Y.Map<any>
     }), []);
 
     return (
-        <div className="relative w-full h-full flex flex-col overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200">
-            {/* Top Toolbar matching CodeEditor */}
+        <div
+            id="whiteboard-container"
+            className="relative w-full h-full flex flex-col overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] transition-colors duration-200"
+        >
             <div className="h-11 px-4 relative flex justify-between items-center shrink-0 border-b border-[#E2E8F0] dark:border-[#1E293B] bg-white dark:bg-[#0E172E] transition-colors duration-200">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#0F172A] dark:text-white">
-                    <div className="w-6 h-6 rounded-lg bg-[#ECFDF5] dark:bg-emerald-950/40 text-[#10B981] dark:text-emerald-400 flex items-center justify-center">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
+                <div className="flex items-center w-full justify-between gap-2 text-xs font-semibold text-[#0F172A] dark:text-white">
+                    <div className="flex items-center gap-2">
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-[#ECFDF5] dark:bg-emerald-950/40 text-[#10B981] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 shadow-xs">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] dark:bg-emerald-400"></span>
+                            Canvas
+                        </span>
                     </div>
-                    <span>Canvas</span>
+                    {onToggleMaximize && (
+                        <button
+                            type="button"
+                            onClick={onToggleMaximize}
+                            title={isMaximized ? "Restore code editor" : "Maximize canvas"}
+                            className="w-8 h-8 rounded-xl bg-[#F8FAFC] dark:bg-[#15203D] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 text-[#64748B] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+                        >
+                            {isMaximized ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-3.5 h-3.5" viewBox="0 0 16 16">
+                                    <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5m5 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 10 4.5v-4a.5.5 0 0 1 .5-.5M0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5m10 1a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0z" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-3.5 h-3.5" viewBox="0 0 16 16">
+                                    <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5M.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5" />
+                                </svg>
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
 

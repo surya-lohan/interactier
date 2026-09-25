@@ -4,7 +4,7 @@ import Whiteboard from "@/app/components/Whiteboard";
 import RoomContext from "@/app/Context/RoomContext";
 import CodeEditor from "@/app/components/CodeEditor";
 import Navbar from "@/app/components/Navbar";
-import { Group, Panel, Separator } from "react-resizable-panels";
+import { Group, Panel, Separator, usePanelRef } from "react-resizable-panels";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Mediacomponent from "@/app/components/MediaComponent";
@@ -18,6 +18,21 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
     const [code, setCode] = useState("");
     const [yElements, setYElements] = useState<any[] | null>(null);
     const [isValidating, setIsValidating] = useState(true);
+    const [isWhiteboardMaximized, setIsWhiteboardMaximized] = useState(false);
+
+    const codePanelRef = usePanelRef();
+
+    const handleToggleWhiteboardMaximize = () => {
+        const panel = codePanelRef.current;
+        if (!panel) return;
+        if (panel.isCollapsed()) {
+            panel.expand();
+            setIsWhiteboardMaximized(false);
+        } else {
+            panel.collapse();
+            setIsWhiteboardMaximized(true);
+        }
+    };
 
     useEffect(() => {
         if (!session && !isPending) {
@@ -42,7 +57,6 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
                 }
 
                 const snapRes = await fetch(`/api/rooms/snapshot/${id}`);
-
                 const snapData = await snapRes.json();
 
                 if (snapData?.snapshot) {
@@ -73,16 +87,33 @@ export default function RoomPage({ params }: { params: Promise<{ id: string }> }
             <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E] text-[#0F172A] dark:text-[#F8FAFC] font-sans transition-colors duration-200">
                 <Navbar roomId={id} snapshotId={snapshotId} />
                 <Mediacomponent roomId={id} />
-                <main className="relative flex flex-1 w-full pt-14 overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E]">
-                    <Group orientation="horizontal">
-                        <Panel defaultSize="50%" className="h-full w-full relative overflow-hidden bg-white dark:bg-[#0E172E]">
+
+                <main className="relative flex-1 w-full pt-14 overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E]">
+                    <Group orientation="horizontal" className="h-full w-full">
+                        <Panel
+                            panelRef={codePanelRef}
+                            collapsible={true}
+                            collapsedSize={0}
+                            defaultSize="50%"
+                            minSize="20%"
+                            onResize={() => {
+                                if (codePanelRef.current) {
+                                    setIsWhiteboardMaximized(codePanelRef.current.isCollapsed());
+                                }
+                            }}
+                            className="h-full w-full relative overflow-hidden bg-white dark:bg-[#0E172E]"
+                        >
                             <CodeEditor code={code} />
                         </Panel>
                         <Separator className="w-1.5 bg-[#E2E8F0] dark:bg-[#1E293B] hover:bg-[#CBD5E1] dark:hover:bg-[#334155] transition-colors cursor-col-resize flex items-center justify-center relative z-10 group">
                             <div className="w-0.5 h-8 rounded-full bg-[#94A3B8] dark:bg-slate-600 group-hover:bg-[#2563EB] dark:group-hover:bg-[#3B82F6] transition-colors" />
                         </Separator>
-                        <Panel defaultSize="50%" className="h-full w-full relative overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E]">
-                            <Whiteboard yElement={yElements} />
+                        <Panel defaultSize="50%" minSize="20%" className="h-full w-full relative overflow-hidden bg-[#FAFAFC] dark:bg-[#070D1E]">
+                            <Whiteboard
+                                yElement={yElements}
+                                isMaximized={isWhiteboardMaximized}
+                                onToggleMaximize={handleToggleWhiteboardMaximize}
+                            />
                         </Panel>
                     </Group>
                 </main>

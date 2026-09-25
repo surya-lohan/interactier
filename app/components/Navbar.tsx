@@ -50,12 +50,18 @@ export default function Navbar({ roomId, snapshotId }: { roomId: string; snapsho
             </Link>
 
             {/* Room ID Badge & Copy Pill */}
-            <div className="flex items-center gap-2 bg-[#EFF6FF] dark:bg-[#1E293B] border border-[#BFDBFE] dark:border-slate-700 rounded-full px-3.5 py-1 text-xs shadow-xs">
-                <span className="text-[#2563EB] dark:text-[#60A5FA] font-semibold hidden sm:inline">Room:</span>
-                <span className="font-mono font-medium text-[#1D4ED8] dark:text-slate-200">{roomId}</span>
+            <div className="flex items-center gap-2 bg-[#EFF6FF] dark:bg-[#1E293B] border border-[#BFDBFE] dark:border-slate-700 rounded-full px-3 sm:px-3.5 py-1 text-xs shadow-xs min-w-0">
+                <span className="text-[#2563EB] dark:text-[#60A5FA] font-semibold hidden sm:inline shrink-0">Room:</span>
+                {/* Mobile: show first 8 chars + ellipsis. sm+: show full UUID */}
+                <span className="font-mono font-medium text-[#1D4ED8] dark:text-slate-200 sm:hidden truncate max-w-[80px]">
+                    {roomId.slice(0, 8)}…
+                </span>
+                <span className="font-mono font-medium text-[#1D4ED8] dark:text-slate-200 hidden sm:inline truncate">
+                    {roomId}
+                </span>
                 <button
                     onClick={handleCopy}
-                    className="ml-1 text-[#2563EB] dark:text-[#60A5FA] hover:text-[#1D4ED8] dark:hover:text-white transition p-1 hover:bg-[#DBEAFE] dark:hover:bg-slate-700 rounded-full cursor-pointer flex items-center"
+                    className="ml-1 text-[#2563EB] dark:text-[#60A5FA] hover:text-[#1D4ED8] dark:hover:text-white transition p-1 hover:bg-[#DBEAFE] dark:hover:bg-slate-700 rounded-full cursor-pointer flex items-center shrink-0"
                     title="Copy Room ID"
                     aria-label="Copy Room ID"
                 >
@@ -64,7 +70,7 @@ export default function Navbar({ roomId, snapshotId }: { roomId: string; snapsho
                             <svg className="w-3 h-3 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                             </svg>
-                            Copied
+                            <span className="hidden sm:inline">Copied</span>
                         </span>
                     ) : (
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

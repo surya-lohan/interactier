@@ -12,6 +12,7 @@ export default function HomePage() {
   const [roomIdInput, setRoomIdInput] = useState("");
   const [copiedFeature, setCopiedFeature] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"both" | "code" | "canvas">("both");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleQuickJoin = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -64,34 +65,25 @@ export default function HomePage() {
             </div>
           </Link>
 
-          {/* Nav Links */}
+          {/* Nav Links — desktop only */}
           <nav className="hidden md:flex items-center gap-8 text-[15px] font-medium text-[#4B5563] dark:text-slate-300">
-            <a href="#features" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">
-              Features
-            </a>
-            <a href="#workspace" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">
-              Workspace Live Demo
-            </a>
-            <a href="#architecture" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">
-              Architecture
-            </a>
-            <a href="#reviews" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">
-              Reviews
-            </a>
+            <a href="#features" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">Features</a>
+            <a href="#workspace" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">Workspace Live Demo</a>
+            <a href="#architecture" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">Architecture</a>
+            <a href="#reviews" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">Reviews</a>
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle Button in Homepage Navbar */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
 
             {session ? (
               <Link
                 href="/dashboard"
-                className="px-5 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold transition-all shadow-cta flex items-center gap-2"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold transition-all shadow-cta flex items-center gap-2"
               >
                 <span>Dashboard</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
@@ -105,17 +97,64 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="px-5 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold transition-all shadow-cta flex items-center gap-2"
+                  className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold transition-all shadow-cta flex items-center gap-1.5"
                 >
-                  <span>Login / Signup</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span className="hidden sm:inline">Login / </span>
+                  <span>Signup</span>
+                  <svg className="w-4 h-4 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               </>
             )}
+
+            {/* Hamburger — mobile only */}
+            <button
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              className="md:hidden p-2 rounded-lg text-[#4B5563] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileNavOpen ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
+        {/* Mobile Nav Dropdown — shown when hamburger is open */}
+        {mobileNavOpen && (
+          <div className="md:hidden border-t border-[#E2E8F0] dark:border-[#1E293B] bg-white/95 dark:bg-[#0E172E]/95 backdrop-blur-md px-4 py-3 flex flex-col gap-1">
+            {[
+              { href: "#features", label: "Features" },
+              { href: "#workspace", label: "Workspace Live Demo" },
+              { href: "#architecture", label: "Architecture" },
+              { href: "#reviews", label: "Reviews" },
+            ].map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2.5 rounded-xl text-sm font-medium text-[#4B5563] dark:text-slate-300 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+            {!session && (
+              <a
+                href="/auth/signin"
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2.5 rounded-xl text-sm font-medium text-[#2563EB] dark:text-[#60A5FA] hover:bg-[#EFF6FF] dark:hover:bg-[#1E293B] transition-colors mt-1 border-t border-[#E2E8F0] dark:border-[#1E293B] pt-3"
+              >
+                Sign In
+              </a>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Main Container */}
