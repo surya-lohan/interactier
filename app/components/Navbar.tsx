@@ -40,14 +40,14 @@ export default function Navbar({ roomId, snapshotId }: { roomId: string; snapsho
     return (
         <header className="fixed top-0 left-0 right-0 w-full h-14 bg-white/95 dark:bg-[#0E172E]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#1E293B] px-4 sm:px-6 flex items-center justify-between z-50 selection:bg-[#EFF6FF] selection:text-[#2563EB] transition-colors duration-200">
             {/* Brand Logo */}
-            <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="flex items-center gap-2.5 group">
                 <div className="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center shadow-xs font-black text-white text-sm tracking-wider transition-transform group-hover:scale-105">
                     IA
                 </div>
                 <span className="font-extrabold text-lg tracking-tight text-[#0F172A] dark:text-white">
                     Inter<span className="text-[#2563EB]">ACT</span>ier
                 </span>
-            </Link>
+            </div>
 
             {/* Room ID Badge & Copy Pill */}
             <div className="flex items-center gap-2 bg-[#EFF6FF] dark:bg-[#1E293B] border border-[#BFDBFE] dark:border-slate-700 rounded-full px-3 sm:px-3.5 py-1 text-xs shadow-xs min-w-0">

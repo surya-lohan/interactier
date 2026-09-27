@@ -14,23 +14,6 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"both" | "code" | "canvas">("both");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const handleQuickJoin = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    const cleanId = roomIdInput.trim();
-    if (!cleanId) return;
-    router.push(`/room/${cleanId}`);
-  };
-
-  const handleCreateInstantRoom = () => {
-    // Generate a clean 8-character random room id if not authenticated, or navigate to dashboard/auth
-    if (session) {
-      router.push("/dashboard");
-    } else {
-      const tempId = Math.random().toString(36).substring(2, 10);
-      router.push(`/room/${tempId}`);
-    }
-  };
-
   const copySnippet = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedFeature(id);
@@ -182,37 +165,6 @@ export default function HomePage() {
               <p className="text-[15px] sm:text-[16px] text-[#4B5563] dark:text-slate-400 font-normal leading-[1.6] mb-8 max-w-xl">
                 A high-performance workspace combining real-time Monaco code editing, an infinite system design canvas, and encrypted peer-to-peer video calling. No Zoom tabs. Zero sync latency.
               </p>
-
-              {/* Primary CTA + Quick Join Form */}
-              <div className="w-full max-w-lg flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-                <button
-                  onClick={handleCreateInstantRoom}
-                  className="h-12 px-6 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] dark:hover:bg-[#1D4ED8] text-white text-[15px] font-semibold flex items-center justify-center gap-2 shadow-cta hover:shadow-lg transition-all cursor-pointer whitespace-nowrap"
-                >
-                  <span>Launch Interview Room</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </button>
-
-                {/* Quick Join Input Box */}
-                <form onSubmit={handleQuickJoin} className="relative flex-1 flex items-center">
-                  <input
-                    type="text"
-                    value={roomIdInput}
-                    onChange={(e) => setRoomIdInput(e.target.value)}
-                    placeholder="Enter Room UUID..."
-                    className="w-full h-12 pl-4 pr-16 bg-white dark:bg-[#0E172E] border border-[#E2E8F0] dark:border-slate-700 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:ring-2 focus:ring-[#EFF6FF] dark:focus:ring-[#2563EB]/20 rounded-xl text-xs sm:text-sm text-[#0F172A] dark:text-white outline-none transition-all font-mono"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!roomIdInput.trim()}
-                    className="absolute right-1.5 h-9 px-3 bg-[#0F172A] hover:bg-[#2563EB] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] disabled:opacity-40 disabled:hover:bg-[#0F172A] dark:disabled:hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-                  >
-                    Join
-                  </button>
-                </form>
-              </div>
 
               {/* Microcopy with Green Checkmarks */}
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-[13px] text-[#4B5563] dark:text-slate-300 mb-8">
@@ -762,7 +714,13 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button
-                onClick={handleCreateInstantRoom}
+                onClick={() => {
+                  if (session) {
+                    router.push('/dashboard')
+                  } else {
+                    router.push('/signin')
+                  }
+                }}
                 className="px-8 py-3.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] dark:hover:bg-[#1D4ED8] text-white font-semibold text-[15px] shadow-cta hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer"
               >
                 <span>Start Free Interview Session</span>
@@ -770,12 +728,14 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </button>
-              <Link
-                href="/auth/signin"
-                className="px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 dark:bg-[#15203D] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-slate-700 font-semibold text-[15px] transition-all"
-              >
-                Sign In to Account
-              </Link>
+              {!session?.user &&
+                <Link
+                  href="/auth/signin"
+                  className="px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 dark:bg-[#15203D] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-slate-700 font-semibold text-[15px] transition-all"
+                >
+                  Sign In to Account
+                </Link>
+              }
             </div>
           </div>
         </section>
