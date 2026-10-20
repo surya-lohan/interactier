@@ -24,9 +24,6 @@ export default function CodeEditor({ code }: { code: string }) {
     const languages = [
         { id: 1, name: "javascript" },
         { id: 2, name: "typescript" },
-        { id: 3, name: "cpp" },
-        { id: 4, name: "java" },
-        { id: 5, name: "python" }
     ];
 
     // Create binding once editor, yDoc, and provider are all ready
