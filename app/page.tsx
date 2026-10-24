@@ -425,7 +425,7 @@ export default function HomePage() {
               </div>
               <div className="flex flex-col items-center border-l-0 sm:border-l border-[#E2E8F0] dark:border-slate-800">
                 <span className="text-3xl sm:text-4xl font-extrabold text-[#10B981] tracking-tight">
-                  25,000+
+                  25+
                 </span>
                 <span className="text-xs sm:text-sm font-medium text-[#4B5563] dark:text-slate-400 mt-1">
                   Technical Rounds Conducted
